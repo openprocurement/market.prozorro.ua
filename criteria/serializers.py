@@ -1,5 +1,3 @@
-import json
-
 from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -52,7 +50,7 @@ class CriteriaCreateSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', read_only=True)
     classification = ClassificationSerializer()
     additionalClassification = AdditionalClassificationSerializer(
-        required=False, source='additional_classification'
+        required=False, source='additional_classification', allow_null=True
     )
     unit = UnitSerializer()
     minValue = serializers.FloatField(source='min_value', required=False)
