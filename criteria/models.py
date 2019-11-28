@@ -8,6 +8,11 @@ DATATYPE_CHOICES = (
     ('number', 'number'),
 )
 
+STATUS_CHOICES = (
+    ('active', 'Active'),
+    ('retired', 'Retired'),
+)
+
 
 class Criteria(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -25,10 +30,12 @@ class Criteria(models.Model):
 
     additional_classification_id = models.CharField(max_length=10, null=True)
     additional_classification_description = models.CharField(max_length=255, null=True)
-    additional_classification_scheme = models.CharField(max_length=10, null=True)
+    additional_classification_scheme = models.CharField(max_length=15, null=True)
 
     date_modified = models.DateTimeField(auto_now=True)
-    archive = models.BooleanField(default=False)
+    status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0]
+    )
 
     class Meta:
         ordering = ('-date_modified', )

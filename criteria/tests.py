@@ -25,6 +25,7 @@ class CriteriaAPITestCase(APITestCase):
     def setUp(self):
         Criteria.objects.all().delete()  # ensure no Criteria in db
         self.valid_criteria_data_1 = {
+            "name": "c",
             "classification": {
                 "id": "92350000-9",
                 "scheme": "ДК021",
@@ -37,6 +38,7 @@ class CriteriaAPITestCase(APITestCase):
             }
         }
         self.valid_criteria_data_2 = {
+            "name": "b",
             "classification": {
                 "id": "92350000-9",
                 "scheme": "ДК021",
@@ -49,6 +51,7 @@ class CriteriaAPITestCase(APITestCase):
             }
         }
         self.valid_criteria_data_3 = {
+            "name": "a",
             "classification": {
                 "id": "92350000-9",
                 "scheme": "ДК021",
@@ -69,9 +72,9 @@ class CriteriaAPITestCase(APITestCase):
                 "description": "Послуги гральних закладів і тоталізаторів"
             },
             "additionalClassification": {
-                "id": "00000000-5",
-                "scheme": "scheme",
-                "description": "description"
+                "id": "03114100-4",
+                "scheme": "ДК021",
+                "description": "Солома"
             },
             "minValue": "11",
             "maxValue": "22",
@@ -144,7 +147,7 @@ class TestCriteriaCreating(CriteriaAPITestCase):
             criteria_data['additionalClassification']
         )
         self.assertIsNotNone(criteria_obj.date_modified)
-        self.assertFalse(criteria_obj.archive)
+        self.assertEqual(criteria_obj.status, 'active')
         self.assertIsNotNone(criteria_obj.id)
 
     def test_successful_criteria_creation_output(self):
@@ -171,7 +174,7 @@ class TestCriteriaCreating(CriteriaAPITestCase):
             criteria_data['additionalClassification']
         )
         self.assertIsNotNone(post_response_json['dateModified'])
-        self.assertFalse(post_response_json['archive'])
+        self.assertEqual(post_response_json['status'], 'active')
         self.assertIsNotNone(post_response_json['id'])
 
 
@@ -183,7 +186,7 @@ class TestCriteriaListing(CriteriaAPITestCase):
         self.assertEqual(
             get_response.status_code, status.HTTP_200_OK
         )
-        self.assertEqual(get_response.json(), [])
+        self.assertEqual(get_response.json()['results'], [])
         for data in self.valid_criteria_data:
             Criteria.objects.create(**api_criteria_data_to_model(data))
         self.assertEqual(Criteria.objects.count(), len(self.valid_criteria_data))
@@ -214,7 +217,7 @@ class TestCriteriaListing(CriteriaAPITestCase):
                 "name": "decibel",
                 "code": "2N"
             },
-            'archive': True
+            'status': 'retired'
         }
         criteria_filtered = Criteria.objects.create(
             **api_criteria_data_to_model(data_for_filtering)
@@ -225,13 +228,13 @@ class TestCriteriaListing(CriteriaAPITestCase):
             get_response.status_code, status.HTTP_200_OK
         )
         get_response_json = get_response.json()
-        self.assertEqual(len(get_response_json), Criteria.objects.count())
+        self.assertEqual(len(get_response_json['results']), Criteria.objects.count())
 
         query_params = {
             'name': 'Cus',
             'classification_id': '0311',
             'additional_classification_id': '4241',
-            'archive': 'true',
+            'status': 'retired',
             'unit_code': '2N',
         }
         for key, value in query_params.items():
@@ -240,9 +243,9 @@ class TestCriteriaListing(CriteriaAPITestCase):
                 filter_get_response.status_code, status.HTTP_200_OK
             )
             filter_get_response_json = filter_get_response.json()
-            self.assertEqual(len(filter_get_response_json), 1)
+            self.assertEqual(len(filter_get_response_json['results']), 1)
             self.assertEqual(
-                filter_get_response_json[0]['id'],
+                filter_get_response_json['results'][0]['id'],
                 criteria_filtered.id.hex
             )
 
@@ -250,19 +253,30 @@ class TestCriteriaListing(CriteriaAPITestCase):
         self.assertEqual(
             filter_get_response.status_code, status.HTTP_200_OK
         )
-        self.assertEqual(len(filter_get_response.json()), 0)
+        self.assertEqual(len(filter_get_response.json()['results']), 0)
 
         filter_get_response = self.client.get(path=API_URL, data={'foo': 'bar'})
         self.assertEqual(
             filter_get_response.status_code, status.HTTP_200_OK
         )
         self.assertEqual(
-            len(filter_get_response.json()), Criteria.objects.count()
+            len(filter_get_response.json()['results']), Criteria.objects.count()
         )
 
     def test_criteria_listing_ordering(self):
-        # TODO: add logic
-        pass
+        for data in self.valid_criteria_data:
+            Criteria.objects.create(**api_criteria_data_to_model(data))
+        for ordering in ('name', '-name'):
+            get_response = self.client.get(path=API_URL, data={'ordering': ordering})
+            self.assertEqual(
+                get_response.status_code, status.HTTP_200_OK
+            )
+            get_response_json = get_response.json()['results']
+            self.assertEqual(len(get_response_json), Criteria.objects.count())
+            self.assertEqual(
+                get_response_json[0]['id'],
+                Criteria.objects.all().order_by(ordering)[0].id.hex
+            )
 
 
 class TestCriteriaDetail(CriteriaAPITestCase):
@@ -294,6 +308,24 @@ class TestCriteriaDetail(CriteriaAPITestCase):
             criteria_obj.additional_classification,
             get_response_json['additionalClassification']
         )
-        # self.assertEqual(criteria_obj.date_modified, get_response_json['dateModified'])
-        self.assertEqual(criteria_obj.archive, get_response_json['archive'])
+        self.assertEqual(criteria_obj.status, get_response_json['status'])
         self.assertEqual(criteria_obj.id.hex, get_response_json['id'])
+
+    def test_criteria_patch(self):
+        criteria_data = self.valid_full_criteria_data
+
+        Criteria.objects.create(**api_criteria_data_to_model(criteria_data))
+        criteria_obj = Criteria.objects.get()
+
+        self.client.get(path=f'{API_URL}{criteria_obj.id.hex}/')
+
+        patch_response = self.client.patch(
+            path=f'{API_URL}{criteria_obj.id.hex}/',
+            data={'name': 'Changed name'},
+            format='json'
+        )
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(patch_response.json()['name'], 'Changed name')
+        criteria_obj = Criteria.objects.get()
+        self.assertEqual(criteria_obj.name, 'Changed name')

@@ -3,31 +3,42 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from criteria.models import DATATYPE_CHOICES, Criteria
+from standarts.validators import StandartsByReferenceValidator
 
 
 class UnitSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=50)
     code = serializers.CharField(max_length=5)
 
+    def validate(self, data):
+        StandartsByReferenceValidator(data).validate_unit()
+        return data
+
 
 class BaseClassificationSerializer(serializers.Serializer):
+    description = serializers.CharField(max_length=255)
+
+    def validate(self, data):
+        return StandartsByReferenceValidator(data).validate_classifiers()
+
+
+class ClassificationSerializer(BaseClassificationSerializer):
+    scheme = serializers.CharField(max_length=15, read_only=True)
     id = serializers.CharField(
         max_length=10,
         validators=(
             RegexValidator(regex=r'^\d{8}-\d$'),
         )
     )
-    description = serializers.CharField(max_length=255)
 
-
-class ClassificationSerializer(BaseClassificationSerializer):
-    def to_representation(self, data):
+    def validate(self, data):
         data['scheme'] = 'ДК021'
-        return data
+        return super().validate(data)
 
 
 class AdditionalClassificationSerializer(BaseClassificationSerializer):
-    scheme = serializers.CharField(max_length=10)
+    id = serializers.CharField(max_length=10)
+    scheme = serializers.CharField(max_length=15)
 
 
 class CriteriaListSerializer(serializers.ModelSerializer):
@@ -42,7 +53,7 @@ class CriteriaListSerializer(serializers.ModelSerializer):
         model = Criteria
         fields = (
             'id', 'name', 'classification', 'additionalClassification',
-            'unit', 'archive'
+            'unit', 'status'
         )
 
 
@@ -64,9 +75,10 @@ class CriteriaCreateSerializer(serializers.ModelSerializer):
         model = Criteria
         fields = (
             'id', 'name', 'nameEng', 'minValue', 'maxValue', 'dataType',
-            'archive', 'classification', 'additionalClassification', 'unit',
+            'status', 'classification', 'additionalClassification', 'unit',
             'dateModified'
         )
+        read_only_fields = ('status', )
         extra_kwargs = {
             'name': {'required': False},
             'dateModified': {'source': 'date_modified'}
@@ -102,10 +114,31 @@ class CriteriaDetailSerializer(serializers.ModelSerializer):
         model = Criteria
         fields = (
             'id', 'name', 'nameEng', 'minValue', 'maxValue', 'dataType',
-            'dateModified', 'archive', 'classification',
+            'dateModified', 'status', 'classification',
             'additionalClassification', 'unit'
         )
         extra_kwargs = {
             'nameEng': {'source': 'name_eng'},
             'dateModified': {'source': 'date_modified'}
         }
+
+
+class CriteriaEditSerializer(serializers.ModelSerializer):
+    minValue = serializers.FloatField(source='min_value', required=False)
+    maxValue = serializers.FloatField(source='max_value', required=False)
+
+    class Meta:
+        model = Criteria
+        fields = (
+            'minValue', 'maxValue', 'name', 'nameEng', 'status'
+        )
+        extra_kwargs = {
+            'nameEng': {'source': 'name_eng'},
+        }
+
+    def validate(self, data):
+        min_value = float(data.get('min_value'))
+        max_value = float(data.get('max_value'))
+        if min_value and max_value and min_value > max_value:
+            raise ValidationError('minValue can`t be greater than maxValue')
+        return data
