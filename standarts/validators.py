@@ -11,12 +11,11 @@ CLASSIFICATION_REFERENCE_MAPPING = {
     'ДК003': 'classifiers_dk003_uk.json',
     'ДК015': 'classifiers_dk015_uk.json',
     'ДК018': 'classifiers_dk018_uk.json',
-    # 'classifiers_kekv_uk': {
-    #     'filename': 'classifiers_kekv_uk.json',
-    # },
+    'КЕКВ': 'classifiers_kekv_uk.json',
     'NONE': 'classifiers_none_uk.json',
     'specialNorms': 'classifiers_special_norms_uk.json',
     'UA-ROAD': 'classifiers_ua_road.json',
+    'GMDN': 'classifiers_gmdn.json',
 }
 
 STANDART_CLASSIFICATION_REFERENCE_SCHEMES = (

@@ -1,3 +1,8 @@
+import base64
+import os
+
+from django.conf import settings
+from passlib.apache import HtpasswdFile
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -21,8 +26,176 @@ def api_criteria_data_to_model(data):
     return result
 
 
+USER_CREDENTIALS = {
+    'admin': 'adminpassword',
+    'user': 'userpassword',
+}
+
+
+class TestAuth(APITestCase):
+
+    def setUp(self):
+        # creating file with credentials
+        ht = HtpasswdFile(settings.PATH_TO_HTPASSWD_FILE, new=True)
+        for username, password in USER_CREDENTIALS.items():
+            ht.set_password(username, password)
+        ht.save()
+
+    def tearDown(self):
+        os.remove(settings.PATH_TO_HTPASSWD_FILE)  # deleting created file
+
+    def test_authorization(self):
+        self.assertEqual(
+            self.client.get(path=API_URL).status_code, status.HTTP_401_UNAUTHORIZED
+        )
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Token random_token'
+        )
+        self.assertEqual(
+            self.client.get(path=API_URL).status_code, status.HTTP_401_UNAUTHORIZED
+        )
+        random_basic_header = base64.b64encode(
+            'wrong_username:password'.encode("utf-8")
+        ).decode('utf-8')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Basic {random_basic_header}')
+        self.assertEqual(
+            self.client.get(path=API_URL).status_code, status.HTTP_401_UNAUTHORIZED
+        )
+
+        username = 'admin'
+        password = 'wrong_password'
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Token {password}'
+        )
+        self.assertEqual(
+            self.client.get(path=API_URL).status_code, status.HTTP_401_UNAUTHORIZED
+        )
+        basic_auth_header = base64.b64encode(
+            f'{username}:{password}'.encode("utf-8")
+        ).decode('utf-8')
+        self.client.credentials(HTTP_AUTHORIZATION=f'Basic {basic_auth_header}')
+        self.assertEqual(
+            self.client.get(path=API_URL).status_code, status.HTTP_401_UNAUTHORIZED
+        )
+
+        for username, password in USER_CREDENTIALS.items():
+            self.client.credentials(
+                HTTP_AUTHORIZATION=f'Token {password}'
+            )
+            self.assertEqual(
+                self.client.get(path=API_URL).status_code, status.HTTP_200_OK
+            )
+            basic_auth_header = base64.b64encode(
+                f'{username}:{password}'.encode("utf-8")
+            ).decode('utf-8')
+            self.client.credentials(HTTP_AUTHORIZATION=f'Basic {basic_auth_header}')
+            self.assertEqual(
+                self.client.get(path=API_URL).status_code, status.HTTP_200_OK
+            )
+
+    def test_admin_permissions(self):
+        admin_token = list(USER_CREDENTIALS.values())[0]
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Token {admin_token}'
+        )
+        self.assertEqual(
+            self.client.get(path=API_URL).status_code, status.HTTP_200_OK
+        )
+
+        criteria_data = {
+            'name': 'Name',
+            'classification': {
+                "id": "92350000-9",
+                "scheme": "ДК021",
+                "description": "Послуги гральних закладів і тоталізаторів"
+            },
+            "dataType": "number",
+            "unit": {
+                "name": "millilitre of water",
+                "code": "WW"
+            }
+        }
+
+        post_response = self.client.post(path=API_URL, data=criteria_data)
+        self.assertEqual(post_response.status_code, status.HTTP_201_CREATED)
+
+        criteria_id = post_response.json()['id']
+        self.assertEqual(
+            self.client.get(path=f'{API_URL}{criteria_id}/').status_code,
+            status.HTTP_200_OK
+        )
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{criteria_id}/',
+                data={'name': 'New name'}
+            ).status_code,
+            status.HTTP_200_OK
+        )
+        self.assertEqual(
+            self.client.delete(path=f'{API_URL}{criteria_id}/').status_code,
+            status.HTTP_204_NO_CONTENT
+        )
+
+    def test_regular_user_permissions(self):
+        regular_user_token = list(USER_CREDENTIALS.values())[1]
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Token {regular_user_token}'
+        )
+        self.assertEqual(
+            self.client.get(path=API_URL).status_code, status.HTTP_200_OK
+        )
+
+        criteria_data = {
+            'name': 'Name',
+            'classification': {
+                "id": "92350000-9",
+                "scheme": "ДК021",
+                "description": "Послуги гральних закладів і тоталізаторів"
+            },
+            "dataType": "number",
+            "unit": {
+                "name": "millilitre of water",
+                "code": "WW"
+            }
+        }
+
+        post_response = self.client.post(path=API_URL, data=criteria_data)
+        self.assertEqual(post_response.status_code, status.HTTP_403_FORBIDDEN)
+        criteria_obj = Criteria.objects.create(
+            **api_criteria_data_to_model(criteria_data)
+        )
+
+        criteria_id = criteria_obj.id
+        self.assertEqual(
+            self.client.get(path=f'{API_URL}{criteria_id}/').status_code,
+            status.HTTP_200_OK
+        )
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{criteria_id}/',
+                data={'name': 'New name'}
+            ).status_code,
+            status.HTTP_403_FORBIDDEN
+        )
+        self.assertEqual(
+            self.client.delete(path=f'{API_URL}{criteria_id}/').status_code,
+            status.HTTP_403_FORBIDDEN
+        )
+
+
 class CriteriaAPITestCase(APITestCase):
     def setUp(self):
+        ht = HtpasswdFile(settings.PATH_TO_HTPASSWD_FILE, new=True)
+        for username, password in USER_CREDENTIALS.items():
+            ht.set_password(username, password)
+        ht.save()
+
+        admin_token = list(USER_CREDENTIALS.values())[0]
+        self.client.credentials(
+            HTTP_AUTHORIZATION=f'Token {admin_token}'
+        )
+
         Criteria.objects.all().delete()  # ensure no Criteria in db
         self.valid_criteria_data_1 = {
             "name": "c",
@@ -96,6 +269,7 @@ class CriteriaAPITestCase(APITestCase):
 
     def tearDown(self):
         Criteria.objects.all().delete()  # ensure no Criteria in db
+        os.remove(settings.PATH_TO_HTPASSWD_FILE)
 
 
 class TestCriteriaCreating(CriteriaAPITestCase):
@@ -216,8 +390,7 @@ class TestCriteriaListing(CriteriaAPITestCase):
             "unit": {
                 "name": "decibel",
                 "code": "2N"
-            },
-            'status': 'retired'
+            }
         }
         criteria_filtered = Criteria.objects.create(
             **api_criteria_data_to_model(data_for_filtering)
@@ -233,8 +406,7 @@ class TestCriteriaListing(CriteriaAPITestCase):
         query_params = {
             'name': 'Cus',
             'classification_id': '0311',
-            'additional_classification_id': '4241',
-            'status': 'retired',
+            'additionalClassification_id': '4241',
             'unit_code': '2N',
         }
         for key, value in query_params.items():
@@ -263,6 +435,10 @@ class TestCriteriaListing(CriteriaAPITestCase):
             len(filter_get_response.json()['results']), Criteria.objects.count()
         )
 
+    def test_criteria_filtering_by_status(self):
+        # TODO: add logic
+        pass
+
     def test_criteria_listing_ordering(self):
         for data in self.valid_criteria_data:
             Criteria.objects.create(**api_criteria_data_to_model(data))
@@ -278,14 +454,43 @@ class TestCriteriaListing(CriteriaAPITestCase):
                 Criteria.objects.all().order_by(ordering)[0].id.hex
             )
 
+    def test_criteria_listing_opt_fields(self):
+        for data in self.valid_criteria_data:
+            Criteria.objects.create(**api_criteria_data_to_model(data))
+        get_response_results = self.client.get(path=API_URL).json()['results']
+        for result in get_response_results:
+            self.assertNotIn('dateModified', result)
+            self.assertNotIn('nameEng', result)
+
+        # test passing one opt_field
+        get_response_results = self.client.get(
+            path=API_URL, data={'opt_fields': 'dateModified'}).json()['results']
+        for result in get_response_results:
+            self.assertIn('dateModified', result)
+
+        # test passing multiple opt_field
+        get_response_results = self.client.get(
+            path=API_URL, data={'opt_fields': 'dateModified,nameEng'}).json()['results']
+        for result in get_response_results:
+            self.assertIn('dateModified', result)
+            self.assertIn('nameEng', result)
+
+        # test returning only fields from model
+        get_response_results = self.client.get(
+            path=API_URL, data={'opt_fields': 'dateModified,foo'}).json()['results']
+        for result in get_response_results:
+            self.assertIn('dateModified', result)
+            self.assertNotIn('foo', result)
+
 
 class TestCriteriaDetail(CriteriaAPITestCase):
     def test_criteria_detail_info(self):
         self.assertEqual(Criteria.objects.count(), 0)
         criteria_data = self.valid_full_criteria_data
 
-        Criteria.objects.create(**api_criteria_data_to_model(criteria_data))
-        criteria_obj = Criteria.objects.get()
+        criteria_obj = Criteria.objects.create(
+            **api_criteria_data_to_model(criteria_data)
+        )
 
         get_response = self.client.get(path=f'{API_URL}{criteria_obj.id.hex}/')
         self.assertEqual(get_response.status_code, status.HTTP_200_OK)
@@ -312,12 +517,9 @@ class TestCriteriaDetail(CriteriaAPITestCase):
         self.assertEqual(criteria_obj.id.hex, get_response_json['id'])
 
     def test_criteria_patch(self):
-        criteria_data = self.valid_full_criteria_data
-
-        Criteria.objects.create(**api_criteria_data_to_model(criteria_data))
-        criteria_obj = Criteria.objects.get()
-
-        self.client.get(path=f'{API_URL}{criteria_obj.id.hex}/')
+        criteria_obj = Criteria.objects.create(
+            **api_criteria_data_to_model(self.valid_full_criteria_data)
+        )
 
         patch_response = self.client.patch(
             path=f'{API_URL}{criteria_obj.id.hex}/',
@@ -329,3 +531,31 @@ class TestCriteriaDetail(CriteriaAPITestCase):
         self.assertEqual(patch_response.json()['name'], 'Changed name')
         criteria_obj = Criteria.objects.get()
         self.assertEqual(criteria_obj.name, 'Changed name')
+
+    def test_criteria_patch_allowed_fields(self):
+        criteria_obj = Criteria.objects.create(
+            **api_criteria_data_to_model(self.valid_full_criteria_data)
+        )
+
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{criteria_obj.id.hex}/',
+                data={'dataType': 'Changed name'},
+                format='json'
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+    def test_criteria_delete(self):
+        criteria_obj = Criteria.objects.create(
+            **api_criteria_data_to_model(self.valid_full_criteria_data)
+        )
+
+        self.assertEqual(
+            self.client.delete(
+                path=f'{API_URL}{criteria_obj.id.hex}/'
+            ).status_code,
+            status.HTTP_204_NO_CONTENT
+        )
+        criteria_obj = Criteria.objects.get()
+        self.assertEqual(criteria_obj.status, 'retired')

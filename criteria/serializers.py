@@ -42,19 +42,34 @@ class AdditionalClassificationSerializer(BaseClassificationSerializer):
 
 
 class CriteriaListSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(source='id.hex')
+    DEFAULT_FIELDNAMES = [
+        'id', 'name', 'classification', 'additionalClassification',
+        'unit', 'status'
+    ]
+
+    id = serializers.CharField(source='id.hex', read_only=True)
     classification = ClassificationSerializer()
     additionalClassification = AdditionalClassificationSerializer(
-        source='additional_classification'
+        required=False, source='additional_classification', allow_null=True
     )
     unit = UnitSerializer()
+    minValue = serializers.FloatField(source='min_value', required=False)
+    maxValue = serializers.FloatField(source='max_value', required=False)
+    dataType = serializers.ChoiceField(
+        source='data_type', choices=DATATYPE_CHOICES
+    )
+    nameEng = serializers.CharField(source='name_eng', required=False)
+    dateModified = serializers.DateTimeField(source='date_modified')
 
     class Meta:
         model = Criteria
-        fields = (
-            'id', 'name', 'classification', 'additionalClassification',
-            'unit', 'status'
-        )
+        fields = '__all__'
+
+    def get_field_names(self, *args, **kwargs):
+        all_fields = super().get_field_names(*args, **kwargs)
+
+        optional_fields = self.context['request'].GET.get('opt_fields', '').split(',')
+        return self.DEFAULT_FIELDNAMES + [field for field in optional_fields if field in all_fields]
 
 
 class CriteriaCreateSerializer(serializers.ModelSerializer):
@@ -137,8 +152,17 @@ class CriteriaEditSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
-        min_value = float(data.get('min_value'))
-        max_value = float(data.get('max_value'))
-        if min_value and max_value and min_value > max_value:
+        # check if extra fields were passed
+        if hasattr(self, 'initial_data'):
+            unknown_keys = \
+                set(self.initial_data.keys()) - set(self.fields.keys())
+            if unknown_keys:
+                raise ValidationError(
+                    f'Got unknown fields for PATCH: {", ".join(unknown_keys)}'
+                )
+
+        min_value = data.get('min_value')
+        max_value = data.get('max_value')
+        if min_value and max_value and float(min_value) > float(max_value):
             raise ValidationError('minValue can`t be greater than maxValue')
         return data
