@@ -1,0 +1,24 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    command: -p 5433
+    expose:
+      - "5433"
+    ports:
+      - "5433:5433"
+
+  web:
+    build: .
+    environment:
+      POSTGRES_DB: ecatalogue
+      POSTGRES_USER: postgres
+      POSTGRES_PORT: 5433
+      POSTGRES_HOST: db
+    ports:
+      - "8000:8000"
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    links:
+      - db
+    depends_on:
+      - db
