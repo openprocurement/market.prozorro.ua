@@ -1,0 +1,44 @@
+PATCH /api/0/criteria/7af62856004742cdb2189444a83a1ad7/ HTTP/1.0
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 20
+Content-Type application/json
+Host 127.0.0.1:8000
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "name": "Name",
+  "nameEng": "Name eng",
+  "classification": {
+    "id": "92350000-9",
+    "scheme": "ДК021",
+    "description": "Послуги гральних закладів і тоталізаторів"
+  },
+  "additionalClassification": {
+    "id": "03114100-4",
+    "scheme": "ДК021",
+    "description": "Солома"
+  },
+  "minValue": "11",
+  "maxValue": "22",
+  "dataType": "number",
+  "unit": {
+    "name": "millilitre of water",
+    "code": "WW"
+  }
+}
+
+
+200 OK
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 20
+Content-Type application/json
+Host 127.0.0.1:8000
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "minValue": 11.0,
+  "maxValue": 22.0,
+  "name": "New name",
+  "nameEng": "Name eng",
+  "status": "active"
+}
