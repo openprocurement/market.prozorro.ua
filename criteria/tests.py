@@ -134,7 +134,7 @@ class TestAuth(APITestCase):
         )
         self.assertEqual(
             self.client.delete(path=f'{API_URL}{criteria_id}/').status_code,
-            status.HTTP_204_NO_CONTENT
+            status.HTTP_200_OK
         )
 
     def test_regular_user_permissions(self):
@@ -555,7 +555,7 @@ class TestCriteriaDetail(CriteriaAPITestCase):
             self.client.delete(
                 path=f'{API_URL}{criteria_obj.id.hex}/'
             ).status_code,
-            status.HTTP_204_NO_CONTENT
+            status.HTTP_200_OK
         )
         criteria_obj = Criteria.objects.get()
         self.assertEqual(criteria_obj.status, 'retired')
