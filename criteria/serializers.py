@@ -41,7 +41,28 @@ class AdditionalClassificationSerializer(BaseClassificationSerializer):
     scheme = serializers.CharField(max_length=15)
 
 
-class CriteriaListSerializer(serializers.ModelSerializer):
+class MinMaxValueSerializer(serializers.Serializer):
+    minValue = serializers.CharField(source='min_value', required=False)
+    maxValue = serializers.CharField(source='max_value', required=False)
+
+    def validate_minValue(self, value):
+        try:
+            float(value)
+        except ValueError:
+            raise ValidationError('Provide a valid number')
+        return value
+
+    def validate_maxValue(self, value):
+        try:
+            float(value)
+        except ValueError:
+            raise ValidationError('Provide a valid number')
+        return value
+
+
+class CriteriaListSerializer(
+    serializers.ModelSerializer, MinMaxValueSerializer
+):
     DEFAULT_FIELDNAMES = [
         'id', 'name', 'classification', 'additionalClassification',
         'unit', 'status'
@@ -53,8 +74,6 @@ class CriteriaListSerializer(serializers.ModelSerializer):
         required=False, source='additional_classification', allow_null=True
     )
     unit = UnitSerializer()
-    minValue = serializers.FloatField(source='min_value', required=False)
-    maxValue = serializers.FloatField(source='max_value', required=False)
     dataType = serializers.ChoiceField(
         source='data_type', choices=DATATYPE_CHOICES
     )
@@ -72,15 +91,15 @@ class CriteriaListSerializer(serializers.ModelSerializer):
         return self.DEFAULT_FIELDNAMES + [field for field in optional_fields if field in all_fields]
 
 
-class CriteriaCreateSerializer(serializers.ModelSerializer):
+class CriteriaCreateSerializer(
+    serializers.ModelSerializer, MinMaxValueSerializer
+):
     id = serializers.CharField(source='id.hex', read_only=True)
     classification = ClassificationSerializer()
     additionalClassification = AdditionalClassificationSerializer(
         required=False, source='additional_classification', allow_null=True
     )
     unit = UnitSerializer()
-    minValue = serializers.FloatField(source='min_value', required=False)
-    maxValue = serializers.FloatField(source='max_value', required=False)
     dataType = serializers.ChoiceField(
         source='data_type', choices=DATATYPE_CHOICES
     )
@@ -112,15 +131,15 @@ class CriteriaCreateSerializer(serializers.ModelSerializer):
         return Criteria.objects.create(**validated_data)
 
 
-class CriteriaDetailSerializer(serializers.ModelSerializer):
+class CriteriaDetailSerializer(
+    serializers.ModelSerializer, MinMaxValueSerializer
+):
     id = serializers.CharField(source='id.hex')
     classification = ClassificationSerializer()
     additionalClassification = AdditionalClassificationSerializer(
         required=False, source='additional_classification'
     )
     unit = UnitSerializer()
-    minValue = serializers.CharField(source='min_value', required=False)
-    maxValue = serializers.CharField(source='max_value', required=False)
     dataType = serializers.ChoiceField(
         source='data_type', choices=DATATYPE_CHOICES
     )
@@ -138,10 +157,9 @@ class CriteriaDetailSerializer(serializers.ModelSerializer):
         }
 
 
-class CriteriaEditSerializer(serializers.ModelSerializer):
-    minValue = serializers.FloatField(source='min_value', required=False)
-    maxValue = serializers.FloatField(source='max_value', required=False)
-
+class CriteriaEditSerializer(
+    serializers.ModelSerializer, MinMaxValueSerializer
+):
     class Meta:
         model = Criteria
         fields = (
