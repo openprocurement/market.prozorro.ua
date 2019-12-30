@@ -59,6 +59,13 @@ class MinMaxValueSerializer(serializers.Serializer):
             raise ValidationError('Provide a valid number')
         return value
 
+    def validate(self, data):
+        min_value = data.get('min_value')
+        max_value = data.get('max_value')
+        if min_value and max_value and float(min_value) > float(max_value):
+            raise ValidationError('minValue can`t be greater than maxValue')
+        return data
+
 
 class CriteriaListSerializer(
     serializers.ModelSerializer, MinMaxValueSerializer
@@ -118,13 +125,6 @@ class CriteriaCreateSerializer(
             'dateModified': {'source': 'date_modified'}
         }
 
-    def validate(self, data):
-        min_value = data.get('min_value')
-        max_value = data.get('max_value')
-        if min_value and max_value and min_value > max_value:
-            raise ValidationError('minValue can`t be greater than maxValue')
-        return data
-
     def create(self, validated_data):
         """We must manually create Criteria instance
         because of nested serializers"""
@@ -179,8 +179,4 @@ class CriteriaEditSerializer(
                     f'Got unknown fields for PATCH: {", ".join(unknown_keys)}'
                 )
 
-        min_value = data.get('min_value')
-        max_value = data.get('max_value')
-        if min_value and max_value and float(min_value) > float(max_value):
-            raise ValidationError('minValue can`t be greater than maxValue')
-        return data
+        return super().validate(data)
