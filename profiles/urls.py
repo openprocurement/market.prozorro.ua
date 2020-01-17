@@ -1,9 +1,9 @@
 from rest_framework import routers
 
-from criteria.views import CriteriaViewset
+from profiles.views import ProfileViewSet
 
 
 router = routers.SimpleRouter()
-router.register('', CriteriaViewset)
+router.register('', ProfileViewSet)
 
 urlpatterns = router.urls
