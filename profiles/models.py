@@ -11,24 +11,34 @@ STATUS_CHOICES = (
 )
 
 CURRENCY_CHOICES = (
-    ('UAH', '')
+    ('UAH', 'UAH'),
+    ('USD', 'USD'),
+    ('EUR', 'EUR'),
 )
 
 
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    description = models.CharField(max_length=1000, null=True)
+
+    access_token = models.UUIDField(default=uuid.uuid4, editable=False)
+    author = models.CharField(max_length=50)
+
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0]
     )
+    date_modified = models.DateTimeField(auto_now=True)
+
     title = models.CharField(max_length=255)
+    description = models.CharField(max_length=1000, null=True)
 
     classification_id = models.CharField(max_length=10)
     classification_description = models.CharField(max_length=255)
 
-    date_modified = models.DateTimeField(auto_now=True)
+    additional_classification = ArrayField(JSONField(), blank=True, null=True)
 
-    images = models.ManyToManyField('ProfileImage')
+    criteria = models.ManyToManyField('ProfileCriteria')
+
+    images = ArrayField(JSONField(), blank=True, null=True)
 
     unit_code = models.CharField(max_length=5)
     unit_name = models.CharField(max_length=50)
@@ -37,18 +47,15 @@ class Profile(models.Model):
     value_currency = models.CharField(
         max_length=3, choices=STATUS_CHOICES, default=CURRENCY_CHOICES[0][0]
     )
-    value_value_added_tax_included = models.BooleanField(default=True)
-
-    additional_classification = ArrayField(JSONField())
-    author = models.CharField(max_length=50)
-
-    criteria = models.ManyToManyField('ProfileCriteria')
+    value_value_added_tax_included = models.BooleanField(
+        default=True, null=True, blank=True
+    )
 
     class Meta:
         ordering = ('-date_modified', )
 
     def __str__(self):
-        return f'<Criteria for classification (id: {self.classification_id})'
+        return f'<Profile {self.title}(id: {self.id.hex})'
 
     # Unit
     @property
@@ -94,7 +101,9 @@ class Profile(models.Model):
     def value(self, value):
         self.value_amount = value.get('amount')
         self.value_currency = value.get('currency')
-        self.value_value_added_tax_included = value.get('valueAddedTaxIncluded')
+        self.value_value_added_tax_included = value.get(
+            'value_added_tax_included'
+        )
 
 
 class ProfileImage(models.Model):
@@ -106,20 +115,16 @@ class ProfileCriteria(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.CharField(max_length=255, null=True)
     title = models.CharField(max_length=255)
-    requirement_groups = models.ManyToManyField(
-        'ProfileCriteriaRequirementGroup'
-    )
+    requirement_groups = models.ManyToManyField('RequirementGroup')
 
 
-class ProfileCriteriaRequirementGroup(models.Model):
+class RequirementGroup(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     description = models.CharField(max_length=255, null=True)
-    requirements = models.ManyToManyField(
-        'ProfileCriteriaRequirementGroupRequirement'
-    )
+    requirements = models.ManyToManyField('Requirement')
 
 
-class ProfileCriteriaRequirementGroupRequirement(models.Model):
+class Requirement(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True)
     related_criteria = models.ForeignKey(

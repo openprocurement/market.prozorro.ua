@@ -1,44 +1,11 @@
-from django.core.validators import RegexValidator
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from criteria.models import DATATYPE_CHOICES, Criteria
-from standarts.validators import StandartsByReferenceValidator
-
-
-class UnitSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=50)
-    code = serializers.CharField(max_length=5)
-
-    def validate(self, data):
-        StandartsByReferenceValidator(data).validate_unit()
-        return data
-
-
-class BaseClassificationSerializer(serializers.Serializer):
-    description = serializers.CharField(max_length=255)
-
-    def validate(self, data):
-        return StandartsByReferenceValidator(data).validate_classifiers()
-
-
-class ClassificationSerializer(BaseClassificationSerializer):
-    scheme = serializers.CharField(max_length=15, read_only=True)
-    id = serializers.CharField(
-        max_length=10,
-        validators=(
-            RegexValidator(regex=r'^\d{8}-\d$'),
-        )
-    )
-
-    def validate(self, data):
-        data['scheme'] = 'ДК021'
-        return super().validate(data)
-
-
-class AdditionalClassificationSerializer(BaseClassificationSerializer):
-    id = serializers.CharField(max_length=10)
-    scheme = serializers.CharField(max_length=15)
+from standarts.serializers import (
+    ClassificationSerializer, AdditionalClassificationSerializer, 
+    UnitSerializer
+)
 
 
 class MinMaxValueSerializer(serializers.Serializer):
