@@ -19,10 +19,14 @@ class RequirementSerializer(serializers.ModelSerializer):
     relatedCriteria_id = serializers.UUIDField(source='related_criteria_id')
     unit = UnitSerializer(read_only=True)
     expectedValue = serializers.CharField(
-        required=False, source='expected_value'
+        required=False, source='expected_value', allow_null=True
     )
-    minValue = serializers.CharField(required=False, source='min_value')
-    maxValue = serializers.CharField(required=False, source='max_value')
+    minValue = serializers.CharField(
+        required=False, source='min_value', allow_null=True
+    )
+    maxValue = serializers.CharField(
+        required=False, source='max_value', allow_null=True
+    )
 
     class Meta:
         model = Requirement
@@ -33,7 +37,7 @@ class RequirementSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         error_msg = (
-            'You must provide exact one value for: '
+            'You must pass exact one of following keys: '
             '"expectedValue", "minValue", "maxValue"'
         )
 
@@ -84,23 +88,21 @@ class RequirementSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        # import pdb; pdb.set_trace()
-        data['relatedCriteria_id'] = instance.related_criteria.id
+        data['relatedCriteria_id'] = instance.related_criteria.id.hex
         return data
 
 
 class RequirementGroupSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(source='id.hex', read_only=True)
+    id = serializers.CharField(source='id.hex', required=False)
     requirements = RequirementSerializer(many=True)
 
     class Meta:
         model = RequirementGroup
         exclude = ()
-        # read_only_fields = ('id', )
 
 
 class ProfileCriteriaSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(source='id.hex', read_only=True)
+    id = serializers.CharField(source='id.hex', required=False)
     requirementGroups = RequirementGroupSerializer(
         source='requirement_groups', many=True
     )
@@ -108,7 +110,6 @@ class ProfileCriteriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileCriteria
         exclude = ('requirement_groups', )
-        # read_only_fields = ('id', )
 
 
 class ProfileImageSerializer(serializers.Serializer):
@@ -155,36 +156,44 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ('status', 'author', )
 
-    def _create_requirement_criteria(self, criteria_data_list):
-        criteria_instances = []
-        for criteria_data in criteria_data_list:
-            requirement_group_list = criteria_data.pop('requirement_groups')
-            profile_criteria, c = ProfileCriteria.objects.get_or_create(
-                **criteria_data
+    def _create_requirement(self, requirement_data):
+        criteria = Criteria.objects.get(
+            id=requirement_data.pop('related_criteria_id'),
+            status='active'
+        )
+        requirement_data['related_criteria'] = criteria
+        return Requirement.objects.create(
+            **requirement_data
+        )
+
+    def _create_requirement_group(self, requirement_group_data):
+        requirements_list = requirement_group_data.pop('requirements')
+        requirement_group = RequirementGroup.objects.create(
+            **requirement_group_data
+        )
+        self._set_requirements_to_requirement_group(
+            requirements_list, requirement_group
+        )
+        return requirement_group
+
+    def _set_requirements_to_requirement_group(
+        self, requirements_list_data, requirement_group
+    ):
+        requirement_instances = []
+        for requirement_data in requirements_list_data:
+            requirement = self._create_requirement(requirement_data)
+            requirement_instances.append(requirement)
+        requirement_group.requirements.set(requirement_instances)
+
+    def _create_criteria(self, criteria_data):
+        requirement_group_list = criteria_data.pop('requirement_groups', [])
+        profile_criteria = ProfileCriteria.objects.create(**criteria_data)
+        for requirement_group_data in requirement_group_list:
+            requirement_group = self._create_requirement_group(
+                requirement_group_data
             )
-
-            for requirement_group_data in requirement_group_list:
-                requirements_list = requirement_group_data.pop('requirements')
-                requirement_group, c = RequirementGroup.objects.get_or_create(
-                    **requirement_group_data
-                )
-
-                for requirement_data in requirements_list:
-                    criteria = Criteria.objects.get(
-                        id=requirement_data.pop('related_criteria_id'),
-                        status='active'
-                    )
-                    requirement_data['related_criteria'] = criteria
-
-                    requirement, c = Requirement.objects.get_or_create(
-                        **requirement_data
-                    )
-                    requirement_group.requirements.add(requirement)
-
-                profile_criteria.requirement_groups.add(requirement_group)
-
-            criteria_instances.append(profile_criteria)
-        return criteria_instances
+            profile_criteria.requirement_groups.add(requirement_group)
+        return profile_criteria
 
 
 class ProfileCreateSerializer(ProfileBaseSerializer):
@@ -205,6 +214,14 @@ class ProfileCreateSerializer(ProfileBaseSerializer):
         instance.criteria.set(criteria_instances)
         return instance
 
+    def _create_requirement_criteria(self, criteria_data_list):
+        criteria_instances = []
+        for criteria_data in criteria_data_list:
+            profile_criteria = self._create_criteria(criteria_data)
+
+            criteria_instances.append(profile_criteria)
+        return criteria_instances
+
 
 class ProfileEditSerializer(ProfileBaseSerializer):
     classification = ClassificationSerializer(read_only=True)
@@ -219,19 +236,86 @@ class ProfileEditSerializer(ProfileBaseSerializer):
             setattr(instance, attr, value)
         instance.save()
 
-        criteria_instances = self._create_requirement_criteria(
-            criteria_data_list
-        )
-        instance.criteria.set(criteria_instances)
+        if criteria_data_list:
+            criteria_instances = self._update_requirement_criteria(
+                criteria_data_list, instance
+            )
+            instance.criteria.set(criteria_instances)
         return instance
 
     def validate(self, data):
         # check if extra fields were passed
         if hasattr(self, 'initial_data'):
-            unknown_keys = \
-                set(self.initial_data.keys()) - set(self.fields.keys())
+            writable_fields = set(
+                key for key, value in self.fields.items()
+                if not value.read_only
+            )
+            unknown_keys = set(self.initial_data.keys()) - writable_fields
             if unknown_keys:
                 raise ValidationError(
                     f'Got unknown fields for PATCH: {", ".join(unknown_keys)}'
                 )
         return super().validate(data)
+
+    def _update_requirement_criteria(self, criteria_data_list, instance):
+        criteria_instances = []
+        for criteria_data in criteria_data_list:
+            criteria_id = criteria_data.pop('id', {}).get('hex')
+            requirement_group_list = criteria_data.pop('requirement_groups', [])
+
+            if criteria_id:
+                # editing existing ProfileCriteria
+                try:
+                    profile_criteria = ProfileCriteria.objects.get(
+                        id=criteria_id
+                    )
+                except ProfileCriteria.DoesNotExist:
+                    raise ValidationError({
+                        'criteria': [
+                            {'id': f'Criteria with id {criteria_id} not found'}
+                        ]
+                    })
+                # setting new field values for ProfileCriteria
+                for attr, value in criteria_data.items():
+                    setattr(profile_criteria, attr, value)
+                profile_criteria.save()
+
+                requirement_group_instances = []
+                for requirement_group_data in requirement_group_list:
+                    requirement_group_id = requirement_group_data.pop('id', {}).get('hex')
+
+                    if requirement_group_id:
+                        # editing existing RequirementGroup
+                        try:
+                            requirement_group = RequirementGroup.objects.get(
+                                id=requirement_group_id
+                            )
+                        except RequirementGroup.DoesNotExist:
+                            raise ValidationError({
+                                'criteria': [
+                                    {'requirementGroups': [{
+                                        'id': f'RequirementGroup with id {requirement_group_id} not found'
+                                    }]}
+                                ]
+                            })
+
+                        requirements_list = requirement_group_data.pop('requirements')
+                        # setting new field values for RequirementGroup
+                        for attr, value in requirement_group_data.items():
+                            setattr(requirement_group, attr, value)
+                        requirement_group.save()
+
+                        self._set_requirements_to_requirement_group(
+                            requirements_list, requirement_group
+                        )
+                    else:
+                        # creating RequirementGroup
+                        requirement_group = self._create_requirement_group(requirement_group_data)
+                    requirement_group_instances.append(requirement_group)
+
+                profile_criteria.requirement_groups.set(requirement_group_instances)
+            else:
+                # creating ProfileCriteria
+                profile_criteria = self._create_criteria(criteria_data)
+            criteria_instances.append(profile_criteria)
+        return criteria_instances
