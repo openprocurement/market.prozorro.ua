@@ -369,7 +369,10 @@ class TestCriteriaListing(CriteriaAPITestCase):
         self.assertEqual(
             get_response.status_code, status.HTTP_200_OK
         )
-        self.assertEqual(len(get_response.json()), len(self.valid_criteria_data))
+        self.assertEqual(
+            len(get_response.json())['results'],
+            len(self.valid_criteria_data)
+        )
 
     def test_criteria_listing_filtering(self):
         for data in self.valid_criteria_data:
