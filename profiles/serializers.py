@@ -177,10 +177,15 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
                         }]}
                     ]
                 })
+
+            for attr, value in requirement_group_data.items():
+                setattr(requirement_group, attr, value)
+            requirement_group.save()
         else:
             requirement_group = RequirementGroup.objects.create(
                 **requirement_group_data
             )
+
         if requirements_list:
             self._set_requirements_to_requirement_group(
                 requirements_list, requirement_group

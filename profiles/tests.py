@@ -1,13 +1,14 @@
-import base64
 import os
+from copy import deepcopy
+import uuid
 
 from django.conf import settings
 from passlib.apache import HtpasswdFile
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from profiles.models import Profile
 from criteria.models import Criteria
+from profiles.models import Profile
 
 API_URL = '/api/0/profiles/'
 
@@ -171,6 +172,63 @@ class TestProfileCreating(ProfileAPITestCase):
         )
         self.assertEqual(Profile.objects.count(), 0)
 
+        profile_data = deepcopy(self.valid_profile_data_1)
+
+        requirement = profile_data['criteria'][0]['requirementGroups'][0]['requirements'][0]
+
+        requirement['maxValue'] = 5
+        self.assertEqual(
+            self.client.post(path=API_URL, data=profile_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        requirement.pop('maxValue')
+        requirement.pop('expectedValue')
+        self.assertEqual(
+            self.client.post(path=API_URL, data=profile_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        requirement['maxValue'] = None
+        criteria = Criteria.objects.get(id=requirement['relatedCriteria_id'])
+
+        criteria.data_type = 'string'
+        criteria.save()
+        self.assertEqual(
+            self.client.post(path=API_URL, data=profile_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria.data_type = 'number'
+        criteria.save()
+        requirement['maxValue'] = 'gmo'
+        self.assertEqual(
+            self.client.post(path=API_URL, data=profile_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria.data_type = 'integer'
+        criteria.save()
+        requirement['maxValue'] = '2.4'
+        self.assertEqual(
+            self.client.post(path=API_URL, data=profile_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria.data_type = 'boolean'
+        criteria.save()
+        requirement['maxValue'] = 'foo'
+        self.assertEqual(
+            self.client.post(path=API_URL, data=profile_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        requirement['relatedCriteria_id'] = uuid.uuid4()
+        self.assertEqual(
+            self.client.post(path=API_URL, data=profile_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
     def test_profile_creating(self):
         profile_data = self.valid_profile_data_2
         post_response = self.client.post(path=API_URL, data=profile_data)
@@ -241,6 +299,28 @@ class TestProfileListing(ProfileAPITestCase):
             len(self.valid_profile_data)
         )
 
+    def test_profile_filtering(self):
+        criteria = Criteria.objects.create(**self.criteria_data)
+        self.assertEqual(Criteria.objects.count(), 2)
+
+        profile_data = deepcopy(self.valid_profile_data_2)
+        post_response = self.client.post(path=API_URL, data=profile_data)
+        self.assertEqual(post_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Profile.objects.count(), 1)
+
+        profile_data['criteria'][0]['requirementGroups'][0]['requirements'][0]['relatedCriteria_id'] = criteria.id.hex
+        post_response = self.client.post(path=API_URL, data=profile_data)
+        self.assertEqual(post_response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Profile.objects.count(), 2)
+        profile_id = post_response.json()['data']['id']
+
+        get_response = self.client.get(
+            path=API_URL,
+            data={'criteria_requirementGroups_requirements_relatedCriteria_id': criteria.id.hex}
+        )
+        self.assertEqual(get_response.json()['count'], 1)
+        self.assertEqual(get_response.json()['results'][0]['id'], profile_id)
+
 
 class TestProfileDetail(ProfileAPITestCase):
     def test_profile_detail_info(self):
@@ -297,8 +377,7 @@ class TestProfileDetail(ProfileAPITestCase):
 
         self.assertEqual(
             self.client.patch(
-                path=f'{API_URL}{profile_obj.id.hex}/',
-                data=data
+                path=f'{API_URL}{profile_obj.id.hex}/', data=data
             ).status_code,
             status.HTTP_400_BAD_REQUEST
         )
@@ -309,8 +388,7 @@ class TestProfileDetail(ProfileAPITestCase):
         }
         self.assertEqual(
             self.client.patch(
-                path=f'{API_URL}{profile_obj.id.hex}/',
-                data=data
+                path=f'{API_URL}{profile_obj.id.hex}/', data=data
             ).status_code,
             status.HTTP_400_BAD_REQUEST
         )
@@ -356,6 +434,15 @@ class TestProfileDetail(ProfileAPITestCase):
             len(requirements)
         )
 
+        data['data']['namess'] = 'foo'
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+        data['data'].pop('namess')
+
         # adding new requirement group
         data['data']['criteria'] = [
             {
@@ -365,7 +452,7 @@ class TestProfileDetail(ProfileAPITestCase):
                         'requirements': [new_requirement]
                     },
                     {
-                        'id': requirement_group_data['id'],
+                        'id': requirement_group_data['id']
                     }
                 ]
             }
@@ -388,6 +475,10 @@ class TestProfileDetail(ProfileAPITestCase):
                 'requirementGroups': [
                     {
                         'requirements': [new_requirement]
+                    },
+                    {
+                        'id': requirement_group_data['id'],
+                        'description': 'foo'
                     }
                 ]
             }
@@ -399,6 +490,78 @@ class TestProfileDetail(ProfileAPITestCase):
         self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             len(patch_response.json()['criteria']), 2
+        )
+        self.assertEqual(
+            patch_response.json()['criteria'][1]['requirementGroups'][1]['description'],
+            'foo'
+        )
+
+        # editing requirement group
+        data['data']['criteria'] = [
+            {
+                'id': criteria_data['id'],
+                'requirementGroups': [
+                    {
+                        'id': uuid.uuid4(),
+                    }
+                ]
+            }
+        ]
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        data['data']['criteria'] = [
+            {
+                'id': criteria_data['id'],
+                'requirementGroups': [
+                    {
+                        'id': requirement_group_data['id'],
+                        'description': 'new description'
+                    }
+                ]
+            }
+        ]
+        patch_response = self.client.patch(
+            path=f'{API_URL}{profile_obj.id.hex}/',
+            data=data
+        )
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            patch_response.json()['criteria'][0]['requirementGroups'][0]['description'],
+            'new description'
+        )
+
+        # editing criteria
+        data['data']['criteria'] = [
+            {
+                'id': uuid.uuid4(),
+                'title': 'foo'
+            }
+        ]
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        data['data']['criteria'] = [
+            {
+                'id': criteria_data['id'],
+                'title': 'foo'
+            }
+        ]
+        patch_response = self.client.patch(
+            path=f'{API_URL}{profile_obj.id.hex}/',
+            data=data
+        )
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            patch_response.json()['criteria'][0]['title'], 'foo'
         )
 
     def test_profile_delete(self):
