@@ -1,5 +1,6 @@
 import base64
 import os
+from copy import deepcopy
 
 from django.conf import settings
 from passlib.apache import HtpasswdFile
@@ -282,12 +283,51 @@ class TestCriteriaCreating(CriteriaAPITestCase):
         self.assertEqual(Criteria.objects.count(), 0)
 
     def test_criteria_basic_validation(self):
-        # TODO: add logic
-        pass
+        criteria_data = deepcopy(self.valid_full_criteria_data)
+        criteria_data['minValue'] = 'foo'
+        self.assertEqual(
+            self._post_json(path=API_URL, data=criteria_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria_data['maxValue'] = 'foo'
+        self.assertEqual(
+            self._post_json(path=API_URL, data=criteria_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria_data['maxValue'] = '1'
+        criteria_data['minValue'] = '2'
+        self.assertEqual(
+            self._post_json(path=API_URL, data=criteria_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
 
     def test_criteria_classifiers_reference_validation(self):
-        # TODO: add logic
-        pass
+        criteria_data = deepcopy(self.valid_full_criteria_data)
+        criteria_data['classification']['id'] = '1111111111-1'
+        self.assertEqual(
+            self._post_json(path=API_URL, data=criteria_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria_data['classification']['id'] = '22222222-1'
+        self.assertEqual(
+            self._post_json(path=API_URL, data=criteria_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria_data['additionalClassification']['scheme'] = 'foo'
+        self.assertEqual(
+            self._post_json(path=API_URL, data=criteria_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        criteria_data['unit']['code'] = 'foo'
+        self.assertEqual(
+            self._post_json(path=API_URL, data=criteria_data).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
 
     def test_criteria_successful_creating(self):
         self.assertEqual(Criteria.objects.count(), 0)
@@ -363,14 +403,16 @@ class TestCriteriaListing(CriteriaAPITestCase):
         self.assertEqual(get_response.json()['results'], [])
         for data in self.valid_criteria_data:
             Criteria.objects.create(**api_criteria_data_to_model(data))
-        self.assertEqual(Criteria.objects.count(), len(self.valid_criteria_data))
+        self.assertEqual(
+            Criteria.objects.count(), len(self.valid_criteria_data)
+        )
 
         get_response = self.client.get(path=API_URL)
         self.assertEqual(
             get_response.status_code, status.HTTP_200_OK
         )
         self.assertEqual(
-            len(get_response.json())['results'],
+            len(get_response.json()['results']),
             len(self.valid_criteria_data)
         )
 
@@ -404,7 +446,10 @@ class TestCriteriaListing(CriteriaAPITestCase):
             get_response.status_code, status.HTTP_200_OK
         )
         get_response_json = get_response.json()
-        self.assertEqual(len(get_response_json['results']), Criteria.objects.count())
+        self.assertEqual(
+            len(get_response_json['results']),
+            Criteria.objects.count()
+        )
 
         query_params = {
             'name': 'Cus',
@@ -434,13 +479,34 @@ class TestCriteriaListing(CriteriaAPITestCase):
         self.assertEqual(
             filter_get_response.status_code, status.HTTP_200_OK
         )
-        self.assertEqual(
-            len(filter_get_response.json()['results']), Criteria.objects.count()
-        )
 
     def test_criteria_filtering_by_status(self):
-        # TODO: add logic
-        pass
+        for data in self.valid_criteria_data:
+            Criteria.objects.create(**api_criteria_data_to_model(data))
+
+        criteria_obj = Criteria.objects.all()[0]
+        criteria_obj.status = 'archive'
+        criteria_obj.save()
+        filter_get_response = self.client.get(
+            path=API_URL, data={'status': 'all'}
+        )
+        self.assertEqual(
+            filter_get_response.status_code, status.HTTP_200_OK
+        )
+        self.assertEqual(
+            len(filter_get_response.json()['results']),
+            Criteria.objects.count()
+        )
+        filter_get_response = self.client.get(
+            path=API_URL, data={'status': 'archive'}
+        )
+        self.assertEqual(
+            filter_get_response.status_code, status.HTTP_200_OK
+        )
+        self.assertEqual(
+            len(filter_get_response.json()['results']),
+            Criteria.objects.filter(status='archive').count()
+        )
 
     def test_criteria_listing_ordering(self):
         for data in self.valid_criteria_data:

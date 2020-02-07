@@ -45,7 +45,7 @@ class RequirementSerializer(serializers.ModelSerializer):
         value_dict = {}
         for key, value in data.items():
             if key in self.ONE_VALUE_AT_A_TIME_FIELDS:
-                if value_dict:
+                if value and value_dict:
                     raise ValidationError(error_msg)
                 else:
                     value_dict[key] = value
@@ -162,13 +162,29 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
         )
 
     def _create_requirement_group(self, requirement_group_data):
-        requirements_list = requirement_group_data.pop('requirements')
-        requirement_group = RequirementGroup.objects.create(
-            **requirement_group_data
-        )
-        self._set_requirements_to_requirement_group(
-            requirements_list, requirement_group
-        )
+        requirements_list = requirement_group_data.pop('requirements', [])
+        group_id = requirement_group_data.pop('id', {}).get('hex')
+        if group_id:
+            try:
+                requirement_group = RequirementGroup.objects.get(
+                    id=group_id
+                )
+            except RequirementGroup.DoesNotExist:
+                raise ValidationError({
+                    'criteria': [
+                        {'requirementGroups': [{
+                            'id': f'RequirementGroup with id {group_id} not found'
+                        }]}
+                    ]
+                })
+        else:
+            requirement_group = RequirementGroup.objects.create(
+                **requirement_group_data
+            )
+        if requirements_list:
+            self._set_requirements_to_requirement_group(
+                requirements_list, requirement_group
+            )
         return requirement_group
 
     def _set_requirements_to_requirement_group(
@@ -231,11 +247,10 @@ class ProfileEditSerializer(ProfileBaseSerializer):
             setattr(instance, attr, value)
         instance.save()
 
-        if criteria_data_list:
-            criteria_instances = self._update_requirement_criteria(
-                criteria_data_list, instance
-            )
-            instance.criteria.set(criteria_instances)
+        criteria_instances = self._update_requirement_criteria(
+            criteria_data_list, instance
+        )
+        instance.criteria.set(criteria_instances)
         return instance
 
     def validate(self, data):
@@ -256,7 +271,6 @@ class ProfileEditSerializer(ProfileBaseSerializer):
         criteria_instances = []
         for criteria_data in criteria_data_list:
             criteria_id = criteria_data.pop('id', {}).get('hex')
-            requirement_group_list = criteria_data.pop('requirement_groups', [])
 
             if criteria_id:
                 # editing existing ProfileCriteria
@@ -271,6 +285,7 @@ class ProfileEditSerializer(ProfileBaseSerializer):
                         ]
                     })
                 # setting new field values for ProfileCriteria
+                requirement_group_list = criteria_data.pop('requirement_groups', [])
                 for attr, value in criteria_data.items():
                     setattr(profile_criteria, attr, value)
                 profile_criteria.save()
@@ -294,15 +309,16 @@ class ProfileEditSerializer(ProfileBaseSerializer):
                                 ]
                             })
 
-                        requirements_list = requirement_group_data.pop('requirements')
+                        requirements_list = requirement_group_data.pop('requirements', [])
                         # setting new field values for RequirementGroup
                         for attr, value in requirement_group_data.items():
                             setattr(requirement_group, attr, value)
                         requirement_group.save()
 
-                        self._set_requirements_to_requirement_group(
-                            requirements_list, requirement_group
-                        )
+                        if requirements_list:
+                            self._set_requirements_to_requirement_group(
+                                requirements_list, requirement_group
+                            )
                     else:
                         # creating RequirementGroup
                         requirement_group = self._create_requirement_group(requirement_group_data)

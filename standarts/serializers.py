@@ -31,7 +31,7 @@ class ClassificationSerializer(BaseClassificationSerializer):
 
     def validate(self, data):
         data['scheme'] = 'ДК021'
-        return data
+        return super().validate(data)
 
 
 class AdditionalClassificationSerializer(BaseClassificationSerializer):
