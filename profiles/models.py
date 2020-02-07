@@ -94,7 +94,7 @@ class Profile(models.Model):
         return {
             'amount': self.value_amount,
             'currency': self.value_currency,
-            'valueAddedTaxIncluded': self.value_value_added_tax_included,
+            'value_added_tax_included': self.value_value_added_tax_included,
         }
 
     @value.setter

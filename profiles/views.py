@@ -1,14 +1,42 @@
-from rest_framework import viewsets
+from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
+from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
-from rest_framework import status
 
 from profiles import models as profile_models
 from profiles import serializers as profile_serializers
 
 
+class ProfileFilter(filters.FilterSet):
+    classification_id = filters.CharFilter(lookup_expr='icontains')
+    classification_description = filters.CharFilter(lookup_expr='icontains')
+    autor = filters.CharFilter(lookup_expr='icontains')
+    criteria_requirementGroups_requirements_relatedCriteria_id = filters.UUIDFilter(  # noqa
+        field_name='criteria_requirementGroups_requirements_relatedCriteria_id',  # noqa
+        method='filter_related_criteria'
+    )
+
+    class Meta:
+        model = profile_models.Profile
+        fields = (
+            'classification_id', 'classification_description', 'autor',
+            'criteria_requirementGroups_requirements_relatedCriteria_id',
+            'status'
+        )
+
+    def filter_related_criteria(self, queryset, name, value):
+        return queryset.filter(
+            criteria__requirement_groups__requirements__related_criteria__id=value  # noqa
+        ).distinct()
+
+
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = profile_models.Profile.objects.all()
     serializer_class = profile_serializers.ProfileCreateSerializer
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_class = ProfileFilter
+    ordering_fields = '__all__'
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve', 'create'):
@@ -20,7 +48,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         instance = serializer.save()
-        headers = self.get_success_headers(serializer.data)
+        serializer = self.get_serializer(instance=instance)
         return Response(
             {
                 'access': {
@@ -29,7 +57,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
                 },
                 'data': serializer.data
             },
-            status=status.HTTP_201_CREATED, headers=headers
+            status=status.HTTP_201_CREATED
         )
 
     def update(self, request, *args, **kwargs):

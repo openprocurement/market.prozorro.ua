@@ -123,17 +123,12 @@ class ProfileImageSerializer(serializers.Serializer):
 
 class ValueSerializer(serializers.Serializer):
     valueAddedTaxIncluded = serializers.BooleanField(
-        source='value_added_tax_included', default=True
+        source='value_added_tax_included'
     )
-    amount = serializers.CharField()
+    amount = serializers.DecimalField(
+        max_digits=10, decimal_places=2, coerce_to_string=False
+    )
     currency = serializers.ChoiceField(choices=CURRENCY_CHOICES)
-
-    def validate_amount(self, value):
-        try:
-            float(value)
-        except ValueError:
-            raise ValidationError('Provide a valid number')
-        return value
 
 
 class ProfileBaseSerializer(serializers.ModelSerializer):

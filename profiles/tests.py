@@ -172,7 +172,7 @@ class TestProfileCreating(ProfileAPITestCase):
         self.assertEqual(Profile.objects.count(), 0)
 
     def test_profile_creating(self):
-        profile_data = self.valid_profile_data_1
+        profile_data = self.valid_profile_data_2
         post_response = self.client.post(path=API_URL, data=profile_data)
         self.assertEqual(post_response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Profile.objects.count(), 1)
