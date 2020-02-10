@@ -1,13 +1,15 @@
+from operator import itemgetter
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from profiles.models import (
-    ProfileCriteria, Requirement, RequirementGroup, CURRENCY_CHOICES, Profile
-)
 from criteria.models import Criteria
+from profiles.models import (
+    CURRENCY_CHOICES, Profile, ProfileCriteria, Requirement, RequirementGroup
+)
 from standarts.serializers import (
-    ClassificationSerializer, UnitSerializer,
-    AdditionalClassificationSerializer
+    AdditionalClassificationSerializer, ClassificationSerializer,
+    UnitSerializer
 )
 
 
@@ -88,7 +90,9 @@ class RequirementSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        data = dict(filter(itemgetter(1), data.items()))
         data['relatedCriteria_id'] = instance.related_criteria.id.hex
+
         return data
 
 
