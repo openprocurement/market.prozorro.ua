@@ -9,8 +9,7 @@ class UnitSerializer(serializers.Serializer):
     code = serializers.CharField(max_length=5, required=True)
 
     def validate(self, data):
-        StandartsByReferenceValidator(data).validate_unit()
-        return data
+        return StandartsByReferenceValidator(data).validate_unit()
 
 
 class BaseClassificationSerializer(serializers.Serializer):
