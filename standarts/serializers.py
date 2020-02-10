@@ -5,7 +5,7 @@ from standarts.validators import StandartsByReferenceValidator
 
 
 class UnitSerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=50)
+    name = serializers.CharField(max_length=100)
     code = serializers.CharField(max_length=5, required=True)
 
     def validate(self, data):
