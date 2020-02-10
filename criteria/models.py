@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.contrib.postgres.indexes import BrinIndex
 
 DATATYPE_CHOICES = (
     ('string', 'string'),
@@ -16,29 +17,32 @@ STATUS_CHOICES = (
 
 class Criteria(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255, null=True)
+    name = models.CharField(max_length=255, null=True, db_index=True)
     name_eng = models.CharField(max_length=255, null=True)
     data_type = models.CharField(max_length=10, choices=DATATYPE_CHOICES)
     min_value = models.CharField(max_length=50, null=True)
     max_value = models.CharField(max_length=50, null=True)
 
     unit_code = models.CharField(max_length=5)
-    unit_name = models.CharField(max_length=50)
+    unit_name = models.CharField(max_length=100)
 
-    classification_id = models.CharField(max_length=10)
-    classification_description = models.CharField(max_length=255)
+    classification_id = models.CharField(max_length=10, db_index=True)
+    classification_description = models.CharField(max_length=255, db_index=True)
 
-    additional_classification_id = models.CharField(max_length=10, null=True)
-    additional_classification_description = models.CharField(max_length=255, null=True)
+    additional_classification_id = models.CharField(max_length=10, null=True, db_index=True)
+    additional_classification_description = models.CharField(max_length=255, null=True, db_index=True)
     additional_classification_scheme = models.CharField(max_length=15, null=True)
 
     date_modified = models.DateTimeField(auto_now=True)
     status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0]
+        max_length=10, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0], db_index=True
     )
 
     class Meta:
         ordering = ('-date_modified', )
+        indexes = (
+            BrinIndex(fields=['date_modified']),
+        )
 
     def __str__(self):
         return f'<Criteria for classification (id: {self.classification_id})'

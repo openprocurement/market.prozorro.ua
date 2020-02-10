@@ -41,7 +41,7 @@ class Profile(models.Model):
     images = ArrayField(JSONField(), blank=True, null=True)
 
     unit_code = models.CharField(max_length=5)
-    unit_name = models.CharField(max_length=50)
+    unit_name = models.CharField(max_length=100)
 
     value_amount = models.DecimalField(max_digits=10, decimal_places=2)
     value_currency = models.CharField(
