@@ -1,6 +1,7 @@
 import uuid
-from django.db import models
+
 from django.contrib.postgres.indexes import BrinIndex
+from django.db import models
 
 DATATYPE_CHOICES = (
     ('string', 'string'),

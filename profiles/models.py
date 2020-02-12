@@ -1,8 +1,8 @@
 import uuid
 
-from django.db import models
 from django.contrib.postgres.fields import ArrayField, JSONField
-
+from django.contrib.postgres.indexes import BrinIndex
+from django.db import models
 
 STATUS_CHOICES = (
     ('active', 'Active'),
@@ -21,18 +21,19 @@ class Profile(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     access_token = models.UUIDField(default=uuid.uuid4, editable=False)
-    author = models.CharField(max_length=50)
+    author = models.CharField(max_length=50, db_index=True)
 
     status = models.CharField(
-        max_length=10, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0]
+        max_length=10, choices=STATUS_CHOICES, default=STATUS_CHOICES[0][0],
+        db_index=True
     )
     date_modified = models.DateTimeField(auto_now=True)
 
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=1000, null=True)
 
-    classification_id = models.CharField(max_length=10)
-    classification_description = models.CharField(max_length=255)
+    classification_id = models.CharField(max_length=10, db_index=True)
+    classification_description = models.CharField(max_length=255, db_index=True)
 
     additional_classification = ArrayField(JSONField(), blank=True, null=True)
 
@@ -53,6 +54,9 @@ class Profile(models.Model):
 
     class Meta:
         ordering = ('-date_modified', )
+        indexes = (
+            BrinIndex(fields=['date_modified']),
+        )
 
     def __str__(self):
         return f'<Profile {self.title}(id: {self.id.hex})'
@@ -130,7 +134,7 @@ class Requirement(models.Model):
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, null=True)
     related_criteria = models.ForeignKey(
-        'criteria.Criteria', on_delete=models.CASCADE
+        'criteria.Criteria', on_delete=models.CASCADE, db_index=True
     )
 
     expected_value = models.CharField(max_length=255, null=True)
