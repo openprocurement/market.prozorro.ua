@@ -67,8 +67,8 @@ class Profile(models.Model):
 
     @unit.setter
     def unit(self, value):
-        self.unit_name = value.get('name')
-        self.unit_code = value.get('code')
+        self.unit_name = value.get('name', self.unit_name)
+        self.unit_code = value.get('code', self.unit_code)
 
     # Classification
     @property
@@ -85,8 +85,10 @@ class Profile(models.Model):
 
     @classification.setter
     def classification(self, value):
-        self.classification_id = value.get('id')
-        self.classification_description = value.get('description')
+        self.classification_id = value.get('id', self.classification_id)
+        self.classification_description = value.get(
+            'description', self.classification_description
+        )
 
     # Value
     @property
@@ -99,10 +101,10 @@ class Profile(models.Model):
 
     @value.setter
     def value(self, value):
-        self.value_amount = value.get('amount')
-        self.value_currency = value.get('currency')
+        self.value_amount = value.get('amount', self.value_amount)
+        self.value_currency = value.get('currency', self.value_currency)
         self.value_value_added_tax_included = value.get(
-            'value_added_tax_included'
+            'value_added_tax_included', self.value_value_added_tax_included
         )
 
 

@@ -130,9 +130,9 @@ class ValueSerializer(serializers.Serializer):
         source='value_added_tax_included'
     )
     amount = serializers.DecimalField(
-        max_digits=10, decimal_places=2, coerce_to_string=False
+        max_digits=10, decimal_places=2, coerce_to_string=False, required=True
     )
-    currency = serializers.ChoiceField(choices=CURRENCY_CHOICES)
+    currency = serializers.ChoiceField(choices=CURRENCY_CHOICES, required=True)
 
 
 class ProfileBaseSerializer(serializers.ModelSerializer):
@@ -256,10 +256,11 @@ class ProfileEditSerializer(ProfileBaseSerializer):
             setattr(instance, attr, value)
         instance.save()
 
-        criteria_instances = self._update_requirement_criteria(
-            criteria_data_list, instance
-        )
-        instance.criteria.set(criteria_instances)
+        if criteria_data_list:
+            criteria_instances = self._update_requirement_criteria(
+                criteria_data_list, instance
+            )
+            instance.criteria.set(criteria_instances)
         return instance
 
     def validate(self, data):
