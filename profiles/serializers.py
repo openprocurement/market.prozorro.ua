@@ -153,7 +153,7 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
             'value_currency', 'value_value_added_tax_included', 'access_token',
             'date_modified'
         )
-        read_only_fields = ('status', 'author', )
+        read_only_fields = ('author', )
 
     def _create_requirement(self, requirement_data):
         criteria = Criteria.objects.get(
@@ -222,6 +222,7 @@ class ProfileCreateSerializer(ProfileBaseSerializer):
         required=False, source='additional_classification',
         allow_null=True, many=True
     )
+    status = serializers.CharField(read_only=True)
 
     def create(self, data):
         criteria_data_list = data.pop('criteria')
@@ -295,13 +296,13 @@ class ProfileEditSerializer(ProfileBaseSerializer):
                         ]
                     })
                 # setting new field values for ProfileCriteria
-                requirement_group_list = criteria_data.pop('requirement_groups', [])
+                requirement_group_list = criteria_data.pop('requirement_groups', None)
                 for attr, value in criteria_data.items():
                     setattr(profile_criteria, attr, value)
                 profile_criteria.save()
 
                 requirement_group_instances = []
-                for requirement_group_data in requirement_group_list:
+                for requirement_group_data in requirement_group_list or []:
                     requirement_group_id = requirement_group_data.pop('id', {}).get('hex')
 
                     if requirement_group_id:
@@ -334,7 +335,8 @@ class ProfileEditSerializer(ProfileBaseSerializer):
                         requirement_group = self._create_requirement_group(requirement_group_data)
                     requirement_group_instances.append(requirement_group)
 
-                profile_criteria.requirement_groups.set(requirement_group_instances)
+                if requirement_group_list is not None:
+                    profile_criteria.requirement_groups.set(requirement_group_instances)
             else:
                 # creating ProfileCriteria
                 profile_criteria = self._create_criteria(criteria_data)

@@ -127,20 +127,39 @@ class CriteriaDetailSerializer(
 class CriteriaEditSerializer(
     serializers.ModelSerializer, MinMaxValueSerializer
 ):
+    id = serializers.CharField(source='id.hex', read_only=True)
+    classification = ClassificationSerializer(read_only=True)
+    additionalClassification = AdditionalClassificationSerializer(
+        required=False, source='additional_classification', read_only=True
+    )
+    unit = UnitSerializer(read_only=True)
+
     class Meta:
         model = Criteria
         fields = (
-            'minValue', 'maxValue', 'name', 'nameEng', 'status'
+            'id', 'name', 'nameEng', 'minValue', 'maxValue', 'dataType',
+            'dateModified', 'status', 'classification', 'unit',
+            'additionalClassification',
+        )
+        read_only_fields = (
+            'id', 'dataType', 'dateModified',
         )
         extra_kwargs = {
             'nameEng': {'source': 'name_eng'},
+            'dateModified': {'source': 'date_modified'},
+            'minValue': {'source': 'min_value'},
+            'maxValue': {'source': 'max_value'},
+            'dataType': {'source': 'data_type'},
         }
 
     def validate(self, data):
         # check if extra fields were passed
         if hasattr(self, 'initial_data'):
-            unknown_keys = \
-                set(self.initial_data.keys()) - set(self.fields.keys())
+            writable_fields = set(
+                key for key, value in self.fields.items()
+                if not value.read_only
+            )
+            unknown_keys = set(self.initial_data.keys()) - writable_fields
             if unknown_keys:
                 raise ValidationError(
                     f'Got unknown fields for PATCH: {", ".join(unknown_keys)}'

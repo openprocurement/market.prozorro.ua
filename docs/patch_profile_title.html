@@ -1,0 +1,86 @@
+PATCH /api/0/profiles/b3be0a18353f41738c2ae86ae00f1f44/ HTTP/1.0
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 107
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "access": {
+    "token": "207b8488df9e455e9a05d6d1e0ffae27",
+    "owner": "admin"
+  },
+  "data": {
+    "title": "New title"
+  }
+}
+
+
+200 OK
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 107
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "id": "b3be0a18353f41738c2ae86ae00f1f44",
+  "unit": {
+    "name": "accounting unit",
+    "code": "E50"
+  },
+  "value": {
+    "valueAddedTaxIncluded": true,
+    "amount": 50.0,
+    "currency": "UAH"
+  },
+  "criteria": [
+    {
+      "id": "ca75fc7d43f746c7825284d4e4b3883e",
+      "requirementGroups": [
+        {
+          "id": "c0be9945df8048388de0b69cfa6ffc15",
+          "requirements": [
+            {
+              "relatedCriteria_id": "b8741a7de9cd4fd089987a0a5e4894cc",
+              "expectedValue": "5",
+              "title": "Test requirement",
+              "description": "Test requirement description"
+            }
+          ],
+          "description": "Test requirement group"
+        }
+      ],
+      "description": "Test description",
+      "title": "Test criteria"
+    }
+  ],
+  "images": [
+    {
+      "sizes": "228",
+      "url": "https://test.url"
+    }
+  ],
+  "dateModified": "2020-02-12T15:25:58.756239Z",
+  "classification": {
+    "description": "Послуги гральних закладів і тоталізаторів",
+    "scheme": "ДК021",
+    "id": "92350000-9"
+  },
+  "additionalClassification": [
+    {
+      "description": "Кишкові щипці",
+      "id": "11785",
+      "scheme": "GMDN"
+    },
+    {
+      "description": "Анатомічні пінцети для розтину",
+      "id": "33912100-7",
+      "scheme": "ДК021"
+    }
+  ],
+  "author": "admin",
+  "status": "active",
+  "title": "New title",
+  "description": "Test description"
+}

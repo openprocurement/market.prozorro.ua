@@ -567,12 +567,25 @@ class TestProfileDetail(ProfileAPITestCase):
     def test_profile_delete(self):
         self.client.post(path=API_URL, data=self.valid_profile_data_1)
         profile_obj = Profile.objects.first()
+        correct_access_data = {
+            "token": profile_obj.access_token.hex,
+            "owner": profile_obj.author,
+        }
 
         self.assertEqual(
             self.client.delete(
                 path=f'{API_URL}{profile_obj.id.hex}/'
             ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        self.assertEqual(
+            self.client.delete(
+                path=f'{API_URL}{profile_obj.id.hex}/',
+                data={'access': correct_access_data}
+            ).status_code,
             status.HTTP_200_OK
         )
+
         profile_obj = Profile.objects.get()
         self.assertEqual(profile_obj.status, 'hidden')

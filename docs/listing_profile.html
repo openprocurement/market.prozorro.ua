@@ -1,0 +1,142 @@
+GET /api/0/profiles/?limit=2 HTTP/1.0
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{}
+
+
+200 OK
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "count": 140,
+  "next": "http://127.0.0.1:8080/api/0/profiles/?limit=2&offset=2",
+  "previous": null,
+  "results": [
+    {
+      "id": "eff960692c1c45a2a60ebb1a6d45daae",
+      "unit": {
+        "name": "accounting unit",
+        "code": "E50"
+      },
+      "value": {
+        "valueAddedTaxIncluded": true,
+        "amount": 50.0,
+        "currency": "UAH"
+      },
+      "criteria": [
+        {
+          "id": "1775b58adbc04b06ae472881c42eecec",
+          "requirementGroups": [
+            {
+              "id": "d2051a8dd47c490a89d708495ad2fd93",
+              "requirements": [
+                {
+                  "relatedCriteria_id": "7002e4def5284ff3b2d84625bc4d9012",
+                  "expectedValue": "5",
+                  "title": "Test requirement",
+                  "description": "Test requirement description"
+                }
+              ],
+              "description": "Test requirement group"
+            }
+          ],
+          "description": "Test description",
+          "title": "Test criteria"
+        }
+      ],
+      "images": [
+        {
+          "sizes": "228",
+          "url": "https://test.url"
+        }
+      ],
+      "dateModified": "2020-02-12T15:25:58.492587Z",
+      "classification": {
+        "description": "Послуги гральних закладів і тоталізаторів",
+        "scheme": "ДК021",
+        "id": "92350000-9"
+      },
+      "additionalClassification": [
+        {
+          "description": "Кишкові щипці",
+          "id": "11785",
+          "scheme": "GMDN"
+        },
+        {
+          "description": "Анатомічні пінцети для розтину",
+          "id": "33912100-7",
+          "scheme": "ДК021"
+        }
+      ],
+      "status": "active",
+      "author": "admin",
+      "title": "Test name",
+      "description": "Test description"
+    },
+    {
+      "id": "e0bb8e73d99a47f98a4b0b8c9758ab34",
+      "unit": {
+        "name": "accounting unit",
+        "code": "E50"
+      },
+      "value": {
+        "valueAddedTaxIncluded": true,
+        "amount": 50.0,
+        "currency": "UAH"
+      },
+      "criteria": [
+        {
+          "id": "c422a49fdb2d4acb9951e8c7aa2228c9",
+          "requirementGroups": [
+            {
+              "id": "5f88867a21a24b8d9da8d3431f036f94",
+              "requirements": [
+                {
+                  "relatedCriteria_id": "35788a04e24d4dadbf2ec2eeb457b3c8",
+                  "expectedValue": "5",
+                  "title": "Test requirement",
+                  "description": "Test requirement description"
+                }
+              ],
+              "description": "Test requirement group"
+            }
+          ],
+          "description": "Test description",
+          "title": "Test criteria"
+        }
+      ],
+      "images": [
+        {
+          "sizes": "228",
+          "url": "https://test.url"
+        }
+      ],
+      "dateModified": "2020-02-12T15:25:58.271133Z",
+      "classification": {
+        "description": "Послуги гральних закладів і тоталізаторів",
+        "scheme": "ДК021",
+        "id": "92350000-9"
+      },
+      "additionalClassification": [
+        {
+          "description": "Кишкові щипці",
+          "id": "11785",
+          "scheme": "GMDN"
+        },
+        {
+          "description": "Анатомічні пінцети для розтину",
+          "id": "33912100-7",
+          "scheme": "ДК021"
+        }
+      ],
+      "status": "active",
+      "author": "admin",
+      "title": "Test name",
+      "description": "Test description"
+    }
+  ]
+}

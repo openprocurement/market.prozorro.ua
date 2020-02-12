@@ -1,0 +1,61 @@
+POST /api/0/criteria/ HTTP/1.0
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 600
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "name": "Name",
+  "nameEng": "Name eng",
+  "classification": {
+    "id": "92350000-9",
+    "scheme": "ДК021",
+    "description": "Послуги гральних закладів і тоталізаторів"
+  },
+  "additionalClassification": {
+    "id": "03114100-4",
+    "scheme": "ДК021",
+    "description": "Солома"
+  },
+  "minValue": "11",
+  "maxValue": "22",
+  "dataType": "number",
+  "unit": {
+    "name": "millilitre of water",
+    "code": "WW"
+  }
+}
+
+
+201 Created
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 600
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "id": "651bcd30e0f747c8a241f44247db2a91",
+  "name": "Name",
+  "nameEng": "Name eng",
+  "minValue": "11",
+  "maxValue": "22",
+  "dataType": "number",
+  "status": "active",
+  "classification": {
+    "description": "Послуги гральних закладів і тоталізаторів",
+    "scheme": "ДК021",
+    "id": "92350000-9"
+  },
+  "additionalClassification": {
+    "description": "Солома",
+    "id": "03114100-4",
+    "scheme": "ДК021"
+  },
+  "unit": {
+    "name": "millilitre of water",
+    "code": "WW"
+  },
+  "dateModified": "2020-02-12T15:25:57.826049Z"
+}

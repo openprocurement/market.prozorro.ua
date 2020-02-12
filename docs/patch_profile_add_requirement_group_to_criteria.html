@@ -1,0 +1,118 @@
+PATCH /api/0/profiles/b3be0a18353f41738c2ae86ae00f1f44/ HTTP/1.0
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 435
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "access": {
+    "token": "207b8488df9e455e9a05d6d1e0ffae27",
+    "owner": "admin"
+  },
+  "data": {
+    "criteria": [
+      {
+        "id": "5d2f4a2d6d29489da4e59793f7c3a8f1",
+        "requirementGroups": [
+          {
+            "id": "32faab56f4ce488581e2232505b92217"
+          },
+          {
+            "description": "Second requirement group",
+            "requirements": [
+              {
+                "title": "Second requirement",
+                "description": "Second requirement description",
+                "relatedCriteria_id": "7002e4def5284ff3b2d84625bc4d9012",
+                "expectedValue": "5"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+
+
+200 OK
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 435
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "id": "b3be0a18353f41738c2ae86ae00f1f44",
+  "unit": {
+    "name": "accounting unit",
+    "code": "E50"
+  },
+  "value": {
+    "valueAddedTaxIncluded": true,
+    "amount": 50.0,
+    "currency": "UAH"
+  },
+  "criteria": [
+    {
+      "id": "5d2f4a2d6d29489da4e59793f7c3a8f1",
+      "requirementGroups": [
+        {
+          "id": "32faab56f4ce488581e2232505b92217",
+          "requirements": [
+            {
+              "relatedCriteria_id": "7002e4def5284ff3b2d84625bc4d9012",
+              "expectedValue": "5",
+              "title": "New requirement",
+              "description": "New requirement description"
+            }
+          ],
+          "description": "New requirement group"
+        },
+        {
+          "id": "664a9ba2a0a54c3c89b3b4b9022068de",
+          "requirements": [
+            {
+              "relatedCriteria_id": "7002e4def5284ff3b2d84625bc4d9012",
+              "expectedValue": "5",
+              "title": "Second requirement",
+              "description": "Second requirement description"
+            }
+          ],
+          "description": "Second requirement group"
+        }
+      ],
+      "description": "New description",
+      "title": "New criteria"
+    }
+  ],
+  "images": [
+    {
+      "sizes": "228",
+      "url": "https://test.url"
+    }
+  ],
+  "dateModified": "2020-02-12T15:25:59.129947Z",
+  "classification": {
+    "description": "Послуги гральних закладів і тоталізаторів",
+    "scheme": "ДК021",
+    "id": "92350000-9"
+  },
+  "additionalClassification": [
+    {
+      "description": "Кишкові щипці",
+      "id": "11785",
+      "scheme": "GMDN"
+    },
+    {
+      "description": "Анатомічні пінцети для розтину",
+      "id": "33912100-7",
+      "scheme": "ДК021"
+    }
+  ],
+  "author": "admin",
+  "status": "active",
+  "title": "New title",
+  "description": "Test description"
+}
