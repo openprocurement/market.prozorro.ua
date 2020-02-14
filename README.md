@@ -4,7 +4,7 @@ REST API application
 ## Run
 To start application run:
 ```bash
-docker-compose up
+docker-compose up --build
 ```
 
 ## Authorization
