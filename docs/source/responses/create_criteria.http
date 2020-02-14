@@ -36,11 +36,11 @@ Host 127.0.0.1:8000
 X-Forwarded-Scheme http
 X-Forwarded-Server localhost:80
 {
-  "id": "7af62856004742cdb2189444a83a1ad7",
+  "id": "1449475e33c241dc9ed49055aa2887f9",
   "name": "Name",
   "nameEng": "Name eng",
-  "minValue": 11.0,
-  "maxValue": 22.0,
+  "minValue": "11",
+  "maxValue": "22",
   "dataType": "number",
   "status": "active",
   "classification": {
@@ -57,5 +57,5 @@ X-Forwarded-Server localhost:80
     "name": "millilitre of water",
     "code": "WW"
   },
-  "dateModified": "2019-12-09T15:36:40.013247Z"
+  "dateModified": "2020-02-14T13:19:18.495640Z"
 }

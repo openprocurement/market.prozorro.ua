@@ -8,7 +8,7 @@ from webob.request import DisconnectionError
 CRITERIA_URL = '/api/0/criteria/'
 PROFILE_URL = '/api/0/profiles/'
 
-API_HOST = 'http://127.0.0.1:8080'
+API_HOST = 'http://127.0.0.1:8000'
 
 CRITERIA_DATA = {
     "name": "Name",
@@ -159,13 +159,13 @@ class CriteriaDocsGenerator:
 
     def generate_code_snippets(self):
         print(' - Creating Criteria')
-        self._write_resp_to_file(self._create_criteria(), 'docs/create_criteria.html')
+        self._write_resp_to_file(self._create_criteria(), 'docs/source/responses/create_criteria.http')
         print(' - View Criteria')
-        self._write_resp_to_file(self._view_criteria(), 'docs/view_criteria.html')
+        self._write_resp_to_file(self._view_criteria(), 'docs/source/responses/view_criteria.http')
         print(' - Patch Criteria')
-        self._write_resp_to_file(self._patch_criteria(), 'docs/patch_criteria.html')
+        self._write_resp_to_file(self._patch_criteria(), 'docs/source/responses/patch_criteria.http')
         print(' - Delete Criteria')
-        self._write_resp_to_file(self._delete_criteria(), 'docs/delete_criteria.html')
+        self._write_resp_to_file(self._delete_criteria(), 'docs/source/responses/delete_criteria.http')
 
 
 class ProfileDocsGenerator:
@@ -467,55 +467,55 @@ class ProfileDocsGenerator:
         print(' - Creating Profile')
         self._write_resp_to_file(
             self._create_profile(),
-            'docs/create_profile.html'
+            'docs/source/responses/create_profile.http'
         )
         print(' - Listing Profile')
         self._write_resp_to_file(
             self._profile_listing(),
-            'docs/listing_profile.html'
+            'docs/source/responses/listing_profile.http'
         )
         print(' - Filtering Profile')
         self._write_resp_to_file(
             self._profile_filtering(),
-            'docs/filtering_profile.html'
+            'docs/source/responses/filtering_profile.http'
         )
         print(' - View Profile')
         self._write_resp_to_file(
             self._view_profile(),
-            'docs/view_profile.html'
+            'docs/source/responses/view_profile.http'
         )
         print(' - Patch Profile')
         self._write_resp_to_file(
             self._patch_profile_title(),
-            'docs/patch_profile_title.html'
+            'docs/source/responses/patch_profile_title.http'
         )
         self._write_resp_to_file(
             self._patch_profile_change_criteria_list(),
-            'docs/patch_profile_change_criteria_list.html'
+            'docs/source/responses/patch_profile_change_criteria_list.http'
         )
         self._write_resp_to_file(
             self._patch_profile_add_criteria(),
-            'docs/patch_profile_add_criteria.html'
+            'docs/source/responses/patch_profile_add_criteria.http'
         )
         self._write_resp_to_file(
             self._patch_profile_edit_criteria(),
-            'docs/patch_profile_edit_criteria.html'
+            'docs/source/responses/patch_profile_edit_criteria.http'
         )
         self._write_resp_to_file(
             self._patch_profile_add_requirement_group_to_criteria(),
-            'docs/patch_profile_add_requirement_group_to_criteria.html'
+            'docs/source/responses/patch_profile_add_requirement_group_to_criteria.http'
         )
         self._write_resp_to_file(
             self._patch_profile_set_requirement_groups_to_criteria(),
-            'docs/patch_profile_set_requirement_groups_to_criteria.html'
+            'docs/source/responses/patch_profile_set_requirement_groups_to_criteria.http'
         )
         self._write_resp_to_file(
             self._patch_profile_set_requirements_to_criteria(),
-            'docs/patch_profile_set_requirements_to_criteria.html'
+            'docs/source/responses/patch_profile_set_requirements_to_criteria.http'
         )
 
         print(' - Delete Profile')
-        self._write_resp_to_file(self._delete_profile(), 'docs/delete_profile.html')
+        self._write_resp_to_file(self._delete_profile(), 'docs/source/responses/delete_profile.http')
 
 
 if __name__ == "__main__":

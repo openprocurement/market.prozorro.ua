@@ -18,11 +18,11 @@
 # -- Project information -----------------------------------------------------
 
 project = 'market.prozorro.ua'
-copyright = '2019, Oleh Helesh'
-author = 'Oleh Helesh'
+copyright = '2019, Quintagroup'
+author = 'Yura Khlyan'
 
 # The full version, including alpha/beta/rc tags
-release = 'v0.1'
+release = 'v0.2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,8 +30,7 @@ release = 'v0.1'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-]
+extensions = ['recommonmark']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -52,6 +51,16 @@ html_theme = 'alabaster'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+# html_static_path = ['_static']
 
 master_doc = 'index'
+
+project = u'Market Prozorro UA'
+author = u'Quintagroup'
+
+
+language = 'uk_UA'
+
+html_theme = 'sphinx_rtd_theme'
+
+locale_dirs = ['locale/']

@@ -1,30 +1,27 @@
-PATCH /api/0/profiles/341a1891f407459bb2ad241cb677e325/ HTTP/1.0
+DELETE /api/0/profiles/8be61f37570947ea860b1c7736a941b7/ HTTP/1.0
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
-Content-Length 107
+Content-Length 75
 Content-Type application/json
-Host 127.0.0.1:8080
+Host 127.0.0.1:8000
 X-Forwarded-Scheme http
 X-Forwarded-Server localhost:80
 {
   "access": {
-    "token": "56a3042fc6d3480cac0e683c7a5bf202",
+    "token": "9cef3577b1d74e55b8806ea9d0272ede",
     "owner": "admin"
-  },
-  "data": {
-    "title": "New title"
   }
 }
 
 
 200 OK
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
-Content-Length 107
+Content-Length 75
 Content-Type application/json
-Host 127.0.0.1:8080
+Host 127.0.0.1:8000
 X-Forwarded-Scheme http
 X-Forwarded-Server localhost:80
 {
-  "id": "341a1891f407459bb2ad241cb677e325",
+  "id": "8be61f37570947ea860b1c7736a941b7",
   "unit": {
     "name": "accounting unit",
     "code": "E50"
@@ -36,23 +33,29 @@ X-Forwarded-Server localhost:80
   },
   "criteria": [
     {
-      "id": "930028af1bd5448fb7b34d4a1d43834c",
+      "id": "da89935fe34d4580b2bf1974bb39d5cf",
       "requirementGroups": [
         {
-          "id": "2b80626bd325459db44139b3404948c6",
+          "id": "0f296fe0eedf4b01a6839ea7831b6235",
           "requirements": [
             {
-              "relatedCriteria_id": "2947fb6574364bd9aefc3963271b9e82",
+              "relatedCriteria_id": "d0f05bb77cab426b8828a952d27894d9",
               "expectedValue": "5",
-              "title": "Test requirement",
-              "description": "Test requirement description"
+              "title": "Requirement 1",
+              "description": "Requirement description 1"
+            },
+            {
+              "relatedCriteria_id": "d0f05bb77cab426b8828a952d27894d9",
+              "expectedValue": "5",
+              "title": "Requirement 2",
+              "description": "Requirement description 2"
             }
           ],
-          "description": "Test requirement group"
+          "description": "Requirement group 1"
         }
       ],
-      "description": "Test description",
-      "title": "Test criteria"
+      "description": "New description",
+      "title": "Completely new title"
     }
   ],
   "images": [
@@ -61,7 +64,7 @@ X-Forwarded-Server localhost:80
       "url": "https://test.url"
     }
   ],
-  "dateModified": "2020-02-13T14:07:59.428407Z",
+  "dateModified": "2020-02-14T13:19:20.249038Z",
   "classification": {
     "description": "Послуги гральних закладів і тоталізаторів",
     "scheme": "ДК021",
@@ -79,8 +82,8 @@ X-Forwarded-Server localhost:80
       "scheme": "ДК021"
     }
   ],
+  "status": "hidden",
   "author": "admin",
-  "status": "active",
   "title": "New title",
   "description": "Test description"
 }

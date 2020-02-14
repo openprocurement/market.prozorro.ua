@@ -1,33 +1,33 @@
-PATCH /api/0/profiles/341a1891f407459bb2ad241cb677e325/ HTTP/1.0
+PATCH /api/0/profiles/8be61f37570947ea860b1c7736a941b7/ HTTP/1.0
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
 Content-Length 532
 Content-Type application/json
-Host 127.0.0.1:8080
+Host 127.0.0.1:8000
 X-Forwarded-Scheme http
 X-Forwarded-Server localhost:80
 {
   "access": {
-    "token": "56a3042fc6d3480cac0e683c7a5bf202",
+    "token": "9cef3577b1d74e55b8806ea9d0272ede",
     "owner": "admin"
   },
   "data": {
     "criteria": [
       {
-        "id": "c58d5f8903c3400bb75020477aab4346",
+        "id": "da89935fe34d4580b2bf1974bb39d5cf",
         "requirementGroups": [
           {
-            "id": "a9e2d659df3a484bafed0719323b5246",
+            "id": "0f296fe0eedf4b01a6839ea7831b6235",
             "requirements": [
               {
                 "title": "Requirement 1",
                 "description": "Requirement description 1",
-                "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
+                "relatedCriteria_id": "d0f05bb77cab426b8828a952d27894d9",
                 "expectedValue": "5"
               },
               {
                 "title": "Requirement 2",
                 "description": "Requirement description 2",
-                "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
+                "relatedCriteria_id": "d0f05bb77cab426b8828a952d27894d9",
                 "expectedValue": "5"
               }
             ]
@@ -43,11 +43,11 @@ X-Forwarded-Server localhost:80
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
 Content-Length 532
 Content-Type application/json
-Host 127.0.0.1:8080
+Host 127.0.0.1:8000
 X-Forwarded-Scheme http
 X-Forwarded-Server localhost:80
 {
-  "id": "341a1891f407459bb2ad241cb677e325",
+  "id": "8be61f37570947ea860b1c7736a941b7",
   "unit": {
     "name": "accounting unit",
     "code": "E50"
@@ -59,19 +59,19 @@ X-Forwarded-Server localhost:80
   },
   "criteria": [
     {
-      "id": "c58d5f8903c3400bb75020477aab4346",
+      "id": "da89935fe34d4580b2bf1974bb39d5cf",
       "requirementGroups": [
         {
-          "id": "a9e2d659df3a484bafed0719323b5246",
+          "id": "0f296fe0eedf4b01a6839ea7831b6235",
           "requirements": [
             {
-              "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
+              "relatedCriteria_id": "d0f05bb77cab426b8828a952d27894d9",
               "expectedValue": "5",
               "title": "Requirement 1",
               "description": "Requirement description 1"
             },
             {
-              "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
+              "relatedCriteria_id": "d0f05bb77cab426b8828a952d27894d9",
               "expectedValue": "5",
               "title": "Requirement 2",
               "description": "Requirement description 2"
@@ -90,7 +90,7 @@ X-Forwarded-Server localhost:80
       "url": "https://test.url"
     }
   ],
-  "dateModified": "2020-02-13T14:07:59.903990Z",
+  "dateModified": "2020-02-14T13:19:20.192381Z",
   "classification": {
     "description": "Послуги гральних закладів і тоталізаторів",
     "scheme": "ДК021",

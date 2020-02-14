@@ -1,6 +1,6 @@
 GET /api/0/profiles/?limit=2 HTTP/1.0
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
-Host 127.0.0.1:8080
+Host 127.0.0.1:8000
 X-Forwarded-Scheme http
 X-Forwarded-Server localhost:80
 {}
@@ -8,16 +8,16 @@ X-Forwarded-Server localhost:80
 
 200 OK
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
-Host 127.0.0.1:8080
+Host 127.0.0.1:8000
 X-Forwarded-Scheme http
 X-Forwarded-Server localhost:80
 {
-  "count": 143,
-  "next": "http://127.0.0.1:8080/api/0/profiles/?limit=2&offset=2",
+  "count": 3,
+  "next": "http://127.0.0.1:8000/api/0/profiles/?limit=2&offset=2",
   "previous": null,
   "results": [
     {
-      "id": "c6d4e533395f4c08b1ca5b50b21be34c",
+      "id": "5e9250a98fb8448190d0f6390ce665cd",
       "unit": {
         "name": "accounting unit",
         "code": "E50"
@@ -29,13 +29,13 @@ X-Forwarded-Server localhost:80
       },
       "criteria": [
         {
-          "id": "27819c0a3e1c4c26b2e9b07f6fdaa172",
+          "id": "28d677b2031d4290922553175bf8ac52",
           "requirementGroups": [
             {
-              "id": "bf18b259802a4c919567af6cac23dead",
+              "id": "9a0cefb5d7cd4a2884a9813cb6b36252",
               "requirements": [
                 {
-                  "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
+                  "relatedCriteria_id": "d0f05bb77cab426b8828a952d27894d9",
                   "expectedValue": "5",
                   "title": "Test requirement",
                   "description": "Test requirement description"
@@ -54,7 +54,7 @@ X-Forwarded-Server localhost:80
           "url": "https://test.url"
         }
       ],
-      "dateModified": "2020-02-13T14:07:59.217023Z",
+      "dateModified": "2020-02-14T13:19:19.537013Z",
       "classification": {
         "description": "Послуги гральних закладів і тоталізаторів",
         "scheme": "ДК021",
@@ -78,7 +78,7 @@ X-Forwarded-Server localhost:80
       "description": "Test description"
     },
     {
-      "id": "ef684bd543c547ccb312bef2bb1e5e6a",
+      "id": "aa3f523c592c47edade52fd4c8a8b4b6",
       "unit": {
         "name": "accounting unit",
         "code": "E50"
@@ -90,13 +90,13 @@ X-Forwarded-Server localhost:80
       },
       "criteria": [
         {
-          "id": "0ed927f1c9f0440cb53a9c73bea8963c",
+          "id": "470a239dc761458395823cb692a6f087",
           "requirementGroups": [
             {
-              "id": "88b7aaa7867440ae96526664ad3e50e0",
+              "id": "9994d617dab1418b9e9f898cade8fa78",
               "requirements": [
                 {
-                  "relatedCriteria_id": "73a765f64a8d4906b2aee4ce3bd455ac",
+                  "relatedCriteria_id": "af48cf0af8f0453a84d52656563f69ce",
                   "expectedValue": "5",
                   "title": "Test requirement",
                   "description": "Test requirement description"
@@ -115,7 +115,7 @@ X-Forwarded-Server localhost:80
           "url": "https://test.url"
         }
       ],
-      "dateModified": "2020-02-13T14:07:59.060077Z",
+      "dateModified": "2020-02-14T13:19:19.175433Z",
       "classification": {
         "description": "Послуги гральних закладів і тоталізаторів",
         "scheme": "ДК021",

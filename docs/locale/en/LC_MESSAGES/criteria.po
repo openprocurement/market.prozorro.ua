@@ -1,0 +1,163 @@
+# Translations template for PROJECT.
+# Copyright (C) 2020 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2020-02-14 16:25+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../../criteria.rst:4
+msgid "Інструкція Criteria"
+msgstr "Criteria tutorial"
+
+#: ../../criteria.rst:7
+msgid "Створення Criteria"
+msgstr "Creating criteria"
+
+#: ../../criteria.rst:9
+msgid "Створити **Criteria** із мінімальним (необхідним) набором даних:"
+msgstr "Let's create **Criteria** with the minimal (only required) data set:"
+
+#: ../../criteria.rst:14
+msgid ""
+"Успіх! Як ми бачимо, було створено новий обєкт. Код відповіді є `201` і "
+"`Location` хедер відповіді говорить про місцезнаходження створеного "
+"обєкта. Тіло відповіді показує інформацію про створений обєкт "
+"**Criteria**."
+msgstr ""
+
+#: ../../criteria.rst:19
+msgid "Перегляд Criteria"
+msgstr "Viewing Criteria"
+
+#: ../../criteria.rst:21
+msgid "Переглянемо **Criteria**."
+msgstr "Now let's view **Criteria**."
+
+#: ../../criteria.rst:26
+msgid ""
+"Успіх! Код відповіді є `200 OK` і відповіді показує інформацію про "
+"створений обєкт **Criteria**."
+msgstr ""
+
+#: ../../criteria.rst:29
+msgid "Редагування Criteria"
+msgstr "Modifying Criteria"
+
+#: ../../criteria.rst:31
+msgid "Відредагуємо **Criteria** шляхом додавання інших параметрів:"
+msgstr ""
+"Let’s update **Criteria** by supplementing it with all other essential "
+"properties:"
+
+#: ../../criteria.rst:36
+msgid "Ми бачимо, що передані параметри були додані до існуючих в **Criteria**."
+msgstr "We see the added properties have merged with existing **Criteria** data."
+
+#: ../../criteria.rst:39
+msgid "Видалення Criteria"
+msgstr "Deleting Criteria"
+
+#: ../../criteria.rst:41
+msgid "Перенесемо **Criteria** в архів, за допомогою зміни статусу на `retire`."
+msgstr "Let's put **Criteria** in the archive, by changing its status to `retire`."
+
+#: ../../criteria.rst:46
+msgid "Успіх! Код відповіді є `204 No Content`."
+msgstr "Success! Response code is `204 No Content`. "
+
+#~ msgid "Criteria tutorial"
+#~ msgstr ""
+
+#~ msgid "Creating Criteria"
+#~ msgstr ""
+
+#~ msgid "Let's create **Criteria** with the minimal (only required) data set:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Success! Now we can see that the"
+#~ " new object was created. Response "
+#~ "code is `201` and `Location` response"
+#~ " header reports the location of the"
+#~ " created object.  The body of "
+#~ "response reveals the information about "
+#~ "the created **Criteria**."
+#~ msgstr ""
+
+#~ msgid "Viewing Criteria"
+#~ msgstr ""
+
+#~ msgid "Now let's view **Criteria**."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Success! Response code is `200 OK` "
+#~ "and the body of response reveals "
+#~ "the information about the created "
+#~ "**Criteria**."
+#~ msgstr ""
+
+#~ msgid "Modifying Criteria"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Let’s update **Criteria** by supplementing "
+#~ "it with all other essential properties:"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "We see the added properties have "
+#~ "merged with existing **Criteria** data."
+#~ msgstr ""
+
+#~ msgid "Deleting Criteria"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Let's put **Criteria** in the archive,"
+#~ " by changing its status to `retire`."
+#~ msgstr ""
+
+#~ msgid "Success! Response code is `204 No Content`."
+#~ msgstr ""
+
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2019, Quintagroup
+# This file is distributed under the same license as the Market Prozorro UA
+# package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2020.
+#~ msgid ""
+#~ "Project-Id-Version: Market Prozorro UA \n"
+#~ "Report-Msgid-Bugs-To: \n"
+#~ "POT-Creation-Date: 2020-02-14 16:25+0200\n"
+#~ "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+#~ "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+#~ "Language-Team: LANGUAGE <LL@li.org>\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.7.0\n"
+#~ msgstr ""
+#~ "Project-Id-Version: Market Prozorro UA \n"
+#~ "Report-Msgid-Bugs-To: \n"
+#~ "POT-Creation-Date: 2020-02-14 16:25+0200\n"
+#~ "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+#~ "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+#~ "Language-Team: LANGUAGE <LL@li.org>\n"
+#~ "MIME-Version: 1.0\n"
+#~ "Content-Type: text/plain; charset=utf-8\n"
+#~ "Content-Transfer-Encoding: 8bit\n"
+#~ "Generated-By: Babel 2.7.0\n"
+
