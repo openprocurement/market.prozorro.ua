@@ -38,7 +38,10 @@ class StandartsByReferenceValidator:
         self.data['description'] = classification_name
 
     def validate_unit(self,):
-        unit_code = self.data['code']
+        try:
+            unit_code = self.data['code']
+        except KeyError:
+            raise ValidationError({'code': 'Code is required'})
         with open('standarts/unit_codes_all.json', 'r') as json_file:
             unit_codes_all = json.loads(json_file.read())
             try:

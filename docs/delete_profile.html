@@ -1,0 +1,89 @@
+DELETE /api/0/profiles/341a1891f407459bb2ad241cb677e325/ HTTP/1.0
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 75
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "access": {
+    "token": "56a3042fc6d3480cac0e683c7a5bf202",
+    "owner": "admin"
+  }
+}
+
+
+200 OK
+Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
+Content-Length 75
+Content-Type application/json
+Host 127.0.0.1:8080
+X-Forwarded-Scheme http
+X-Forwarded-Server localhost:80
+{
+  "id": "341a1891f407459bb2ad241cb677e325",
+  "unit": {
+    "name": "accounting unit",
+    "code": "E50"
+  },
+  "value": {
+    "valueAddedTaxIncluded": true,
+    "amount": 50.0,
+    "currency": "UAH"
+  },
+  "criteria": [
+    {
+      "id": "c58d5f8903c3400bb75020477aab4346",
+      "requirementGroups": [
+        {
+          "id": "a9e2d659df3a484bafed0719323b5246",
+          "requirements": [
+            {
+              "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
+              "expectedValue": "5",
+              "title": "Requirement 1",
+              "description": "Requirement description 1"
+            },
+            {
+              "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
+              "expectedValue": "5",
+              "title": "Requirement 2",
+              "description": "Requirement description 2"
+            }
+          ],
+          "description": "Requirement group 1"
+        }
+      ],
+      "description": "New description",
+      "title": "Completely new title"
+    }
+  ],
+  "images": [
+    {
+      "sizes": "228",
+      "url": "https://test.url"
+    }
+  ],
+  "dateModified": "2020-02-13T14:07:59.986002Z",
+  "classification": {
+    "description": "Послуги гральних закладів і тоталізаторів",
+    "scheme": "ДК021",
+    "id": "92350000-9"
+  },
+  "additionalClassification": [
+    {
+      "description": "Кишкові щипці",
+      "id": "11785",
+      "scheme": "GMDN"
+    },
+    {
+      "description": "Анатомічні пінцети для розтину",
+      "id": "33912100-7",
+      "scheme": "ДК021"
+    }
+  ],
+  "status": "hidden",
+  "author": "admin",
+  "title": "New title",
+  "description": "Test description"
+}
