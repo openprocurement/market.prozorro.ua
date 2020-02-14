@@ -2,8 +2,10 @@ from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.filters import OrderingFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from criteria.permissions import IsAdminOrReadOnlyPermission
 from profiles import models as profile_models
 from profiles import serializers as profile_serializers
 
@@ -33,6 +35,7 @@ class ProfileFilter(filters.FilterSet):
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = profile_models.Profile.objects.all()
+    permission_classes = (IsAuthenticated, IsAdminOrReadOnlyPermission)
     serializer_class = profile_serializers.ProfileCreateSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filterset_class = ProfileFilter

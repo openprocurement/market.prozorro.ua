@@ -20,7 +20,7 @@ services:
       POSTGRES_PORT: 5433
       POSTGRES_HOST: db
     ports:
-      - "80:8000"
+      - "8000:8000"
     command: gunicorn application.wsgi:application --worker-connections=1000 --workers=9 --bind 0.0.0.0:8000
     depends_on:
       - db
