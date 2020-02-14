@@ -1,6 +1,6 @@
 PATCH /api/0/profiles/341a1891f407459bb2ad241cb677e325/ HTTP/1.0
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
-Content-Length 435
+Content-Length 176
 Content-Type application/json
 Host 127.0.0.1:8080
 X-Forwarded-Scheme http
@@ -14,22 +14,7 @@ X-Forwarded-Server localhost:80
     "criteria": [
       {
         "id": "c58d5f8903c3400bb75020477aab4346",
-        "requirementGroups": [
-          {
-            "id": "2239aa3f0cf644bea7dd58deb551bf17"
-          },
-          {
-            "description": "Second requirement group",
-            "requirements": [
-              {
-                "title": "Second requirement",
-                "description": "Second requirement description",
-                "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
-                "expectedValue": "5"
-              }
-            ]
-          }
-        ]
+        "title": "Completely new title"
       }
     ]
   }
@@ -38,7 +23,7 @@ X-Forwarded-Server localhost:80
 
 200 OK
 Authorization Basic YWRtaW46YWRtaW5wYXNzd29yZA==
-Content-Length 435
+Content-Length 176
 Content-Type application/json
 Host 127.0.0.1:8080
 X-Forwarded-Scheme http
@@ -69,18 +54,6 @@ X-Forwarded-Server localhost:80
             }
           ],
           "description": "New requirement group"
-        },
-        {
-          "id": "249ee70b78474a18b5a6f4d5297be7fe",
-          "requirements": [
-            {
-              "relatedCriteria_id": "78deb72bd3eb4941a0741ba9466c7e34",
-              "expectedValue": "5",
-              "title": "Second requirement",
-              "description": "Second requirement description"
-            }
-          ],
-          "description": "Second requirement group"
         }
       ],
       "description": "New description",
@@ -93,7 +66,7 @@ X-Forwarded-Server localhost:80
       "url": "https://test.url"
     }
   ],
-  "dateModified": "2020-02-13T14:07:59.707121Z",
+  "dateModified": "2020-02-13T14:07:59.640191Z",
   "classification": {
     "description": "Послуги гральних закладів і тоталізаторів",
     "scheme": "ДК021",

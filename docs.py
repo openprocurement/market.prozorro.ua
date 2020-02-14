@@ -322,6 +322,26 @@ class ProfileDocsGenerator:
         )
         return self._format_response_output(resp, patch_data)
 
+    def _patch_profile_edit_criteria(self):
+        profile_data = self.app.get(f'{PROFILE_URL}{self.profile_id}/').json
+        patch_data = {
+            'access': self.access_data,
+            'data': {
+                'criteria': [
+                    {
+                        'id': profile_data['criteria'][0]['id'],
+                        'title': 'Completely new title'
+                    },
+                ]
+            }
+        }
+        resp = self.app.patch_json(
+            f'{PROFILE_URL}{self.profile_id}/',
+            patch_data,
+            content_type='application/json'
+        )
+        return self._format_response_output(resp, patch_data)
+
     def _patch_profile_add_requirement_group_to_criteria(self):
         profile_data = self.app.get(f'{PROFILE_URL}{self.profile_id}/').json
         patch_data = {
@@ -476,6 +496,10 @@ class ProfileDocsGenerator:
         self._write_resp_to_file(
             self._patch_profile_add_criteria(),
             'docs/patch_profile_add_criteria.html'
+        )
+        self._write_resp_to_file(
+            self._patch_profile_edit_criteria(),
+            'docs/patch_profile_edit_criteria.html'
         )
         self._write_resp_to_file(
             self._patch_profile_add_requirement_group_to_criteria(),
