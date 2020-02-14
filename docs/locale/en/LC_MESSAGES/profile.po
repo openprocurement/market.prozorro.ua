@@ -1,3 +1,4 @@
+ 
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2019, Quintagroup
 # This file is distributed under the same license as the Market Prozorro UA
@@ -20,57 +21,60 @@ msgstr ""
 
 #: ../../profile.rst:2
 msgid "Інструкція Profile"
-msgstr ""
+msgstr "Profile tutorial"
 
 #: ../../profile.rst:4
 msgid "Дістати список **Profiles**."
-msgstr ""
+msgstr "Let's get the list of **Profiles**."
 
 #: ../../profile.rst:10
 msgid "Створення Profile"
-msgstr ""
+msgstr "Profile creation"
 
 #: ../../profile.rst:12
 msgid "Створити **Criteria**."
-msgstr ""
+msgstr "Let's create **Criteria**."
 
 #: ../../profile.rst:13
 msgid "Дістати ``id`` щойно створеної **Criteria** -- ``relatedCriteria_id``"
-msgstr ""
+msgstr "Let's get the ``id`` of the created **Criteria** -- ``relatedCriteria_id``"
 
 #: ../../profile.rst:14
 msgid ""
 "Сформувати дані для **Profile**. Параметр **Criteria** в даних для "
 "**Profile** повинен виглядати ось так:"
 msgstr ""
+"Let's generate **Profile** data. The **Criteria** parameter in **Profile** data should look as follows:"
 
 #: ../../profile.rst:39
 msgid ""
 "Після створення **Criteria**, у відповіді буде блок ``access``, "
 "необхідний для можливості редагувати **Profile**."
 msgstr ""
+"Right after the **Criteria** creation, there will appear ``access`` block that is essential for the **Profile** editing ability."
 
 #: ../../profile.rst:46
 msgid "Перегляд Profile"
-msgstr ""
+msgstr "Profile view"
 
 #: ../../profile.rst:49
 msgid "Редагування Profile"
-msgstr ""
+msgstr "Profile editing"
 
 #: ../../profile.rst:51
 msgid ""
 "Для редагування **Profile**, крім бажаних даних, потрібно передати "
 "``access`` блок, котрий був отриманий при створенні **Criteria**:"
 msgstr ""
+"To edit the **Profile** one must pass the ``access`` block that was obtained during the **Criteria** creation along with the desired data:"
 
 #: ../../profile.rst:61
 msgid "Редагування всіх полів, крім **Criteria**."
-msgstr ""
+msgstr "Let's edit all fields except **Criteria**."
 
 #: ../../profile.rst:62
 msgid "Редагування поля **Criteria**:"
-msgstr ""
+msgstr "Let's edit the **Criteria** field:"
 
 #: ../../profile.rst:64
 msgid ""
@@ -78,6 +82,7 @@ msgid ""
 "на нове, потрібно передати новий список **Criteria** (такого ж вигляду, "
 "як і при створенні):"
 msgstr ""
+"Complete override of the **Criteria** field. To completely override the **Criteria** field one must submit a new list of **Criteria** (with the same look as when it was created):"
 
 #: ../../profile.rst:90
 msgid ""
@@ -85,16 +90,19 @@ msgid ""
 "**Criteria**, потрібно в поле **Criteria** передати список існуючих у "
 "вигляді:"
 msgstr ""
+"Addition of a new **Criteria** to already existing ones. "
+"To add a new **Criteria**, one must submit a list of existing ones in the **Criteria** field as follows:"
 
 #: ../../profile.rst:100
 msgid "Також потрібно додати дані для нової **Criteria** (як згадано вище)."
-msgstr ""
+msgstr "Also one must add data for the new **Criteria** (as mentioned above)."
 
 #: ../../profile.rst:102
 msgid ""
 "Редагування **Criteria** (1). Щоб редагувати якусь конкретну **Criteria**"
 " зі списку, потрібно передати її ``id`` разом з даними для редагування:"
 msgstr ""
+"**Criteria** editing (1). To edit a specific **Criteria** from the list, one must pass its ``id`` along with the data to be edited:"
 
 #: ../../profile.rst:118
 msgid ""
@@ -102,6 +110,7 @@ msgid ""
 "але хочемо залишити, то їх потрібно також передати так, як було описано "
 "вище:"
 msgstr ""
+"Remember, if there are other **Criteria** that we do not want to edit, but want to keep, we must pass them too as described above:"
 
 #: ../../profile.rst:128
 msgid ""
@@ -110,178 +119,37 @@ msgid ""
 "редагування **Criteria** в **Profile**. Тобто, щоб замінити "
 "``requirementGroups``, потрбіно передати список з даними для них:"
 msgstr ""
+"**Criteria** editing (2). Adding / override / editing of ``requirementGroups`` in **Criteria** is similar to **Criteria** editing in **Profile**. That is, to replace the ``requirementGroups``, one must submit a list of their data:"
 
 #: ../../profile.rst:154
 msgid ""
 "Щоб додати нову ``requirementGroup``, потрібно до списку з існуючих "
 "``requirementGroups``, добавити дані для нової:"
 msgstr ""
+"To add a new ``requirementGroup``, one must add the new ``requirementGroup`` data to the list of existing ones:"
 
 #: ../../profile.rst:180
 msgid ""
 "Щоб редагувати ``requirementGroup`` потрібно, разом з даними для "
 "редагування передати ``id`` групи, котру ми хочемо редагувати."
 msgstr ""
+"To edit the ``requirementGroup``, one must pass its ``id`` along with the data to be edited:"
 
 #: ../../profile.rst:211
 msgid "Видалення Profile"
-msgstr ""
+msgstr "Profile deletion"
 
 #: ../../profile.rst:213
 msgid "Після видалення **Profile**, він переходить в статус hidden."
-msgstr ""
+msgstr "Once deleted the **Profile** goes into the hidden status."
 
 #: ../../profile.rst:216
 msgid "Фільтрація списку Profile"
-msgstr ""
+msgstr "Profile list filtration"
 
 #: ../../profile.rst:218
 msgid ""
 "Щоб профільтрувати список **Profile** по ``relatedCriteria_id``, потрібно"
 " в GET параметри передати наступні дані:"
 msgstr ""
-
-#~ msgid "Дістати список Profiles."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Дістати список Profiles. .. include:: "
-#~ "source/responses/listing_profile.http :code:"
-#~ msgstr ""
-
-#~ msgid "Інструкція Profile"
-#~ msgstr ""
-
-#~ msgid ".. include:: source/responses/listing_profile.http :code:"
-#~ msgstr ""
-
-#~ msgid "Створення Profile"
-#~ msgstr ""
-
-#~ msgid "Створити Criteria."
-#~ msgstr ""
-
-#~ msgid "Дістати id щойно створеної Criteria -- relatedCriteria_id"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Сформувати дані для Profile. Параметр "
-#~ "Criteria в даних для Profile повинен "
-#~ "виглядати ось так:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Після створення Criteria, у відповіді "
-#~ "буде блок access, необхідний для "
-#~ "можливості редагувати Profile."
-#~ msgstr ""
-
-#~ msgid ".. include:: source/responses/create_profile.http :code:"
-#~ msgstr ""
-
-#~ msgid "Перегляд Profile"
-#~ msgstr ""
-
-#~ msgid "Редагування Profile"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Для редагування Profile, крім бажаних "
-#~ "даних, потрібно передати access блок, "
-#~ "котрий був отриманий при створенні "
-#~ "Criteria:"
-#~ msgstr ""
-
-#~ msgid "Редагування всіх полів, крім Criteria."
-#~ msgstr ""
-
-#~ msgid "Редагування поля  Criteria:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Повна заміна поля Criteria. Щоб замінити"
-#~ " повністю поле Criteria на нове, "
-#~ "потрібно передати новий список Criteria "
-#~ "(такого ж вигляду, як і при "
-#~ "створенні):"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Додавання нової Criteria до вже "
-#~ "існуючих. Щоб додати нову Criteria, "
-#~ "потрібно в поле Criteria передати список"
-#~ " існуючих у вигляді:"
-#~ msgstr ""
-
-#~ msgid "Також потрібно додати дані для нової Criteria (як згадано вище)."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Редагування Criteria (1). Щоб редагувати "
-#~ "якусь конкретну Criteria зі списку, "
-#~ "потрібно передати її id разом з "
-#~ "даними для редагування:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Не забуваємо, якщо є інші Criteria, "
-#~ "котрі ми не хочемо редагувати, але "
-#~ "хочемо залишити, то їх потрібно також"
-#~ " передати так, як було описано вище:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Редагування Criteria (2). "
-#~ "Додавання/заміна/редагування requirementGroups в "
-#~ "Criteria відбувається аналогічно до "
-#~ "редагування Criteria в Profile. Тобто, "
-#~ "щоб замінити requirementGroups, потрбіно "
-#~ "передати список з даними для них:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Щоб додати нову requirementGroup, потрібно "
-#~ "до списку з існуючих requirementGroups, "
-#~ "добавити дані для нової:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Щоб редагувати requirementGroup потрібно, "
-#~ "разом з даними для редагування передати"
-#~ " id групи, котру ми хочемо "
-#~ "редагувати."
-#~ msgstr ""
-
-#~ msgid "Видалення Profile"
-#~ msgstr ""
-
-#~ msgid "Після видалення Profile, він переходить в статус hidden."
-#~ msgstr ""
-
-#~ msgid "Фільтрація списку Profile"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Щоб профільтрувати список Profile по "
-#~ "relatedCriteria_id, потрібно в GET параметри"
-#~ " передати наступні дані:"
-#~ msgstr ""
-
-#~ msgid "### Створення Profile"
-#~ msgstr ""
-
-#~ msgid "### Перегляд Profile"
-#~ msgstr ""
-
-#~ msgid "### Редагування Profile"
-#~ msgstr ""
-
-#~ msgid "### Видалення Profile"
-#~ msgstr ""
-
-#~ msgid "### Фільтрація списку Profile"
-#~ msgstr ""
-
-#~ msgid "# Інструкція Profile"
-#~ msgstr ""
-
+"To filter the **Profile** list by ``relatedCriteria_id``, one must pass the following data to the GET parameters:"
