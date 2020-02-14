@@ -64,3 +64,22 @@ language = 'uk_UA'
 html_theme = 'sphinx_rtd_theme'
 
 locale_dirs = ['locale/']
+
+latex_elements = {
+# The paper size ('letterpaper' or 'a4paper').
+#'papersize': 'letterpaper',
+
+# The font size ('10pt', '11pt' or '12pt').
+#'pointsize': '10pt',
+
+# Additional stuff for the LaTeX preamble.
+#'preamble': '',
+
+# Latex figure (float) alignment
+#'figure_align': 'htbp',
+}
+
+latex_documents = [
+    (master_doc, 'Tutorial.tex', u'Market Prozorro Documentation',
+     u'Quintagroup', 'manual'),
+]
