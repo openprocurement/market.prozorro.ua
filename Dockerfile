@@ -17,10 +17,6 @@ RUN apt-get update && \
 
 RUN useradd -r -l market_prozorro_ua
 COPY --from=compile-image /opt/venv /opt/venv
-COPY --chown=market_prozorro_ua application ./application
-COPY --chown=market_prozorro_ua criteria ./criteria
-COPY --chown=market_prozorro_ua profiles ./profiles
-COPY --chown=market_prozorro_ua standarts ./standarts
 COPY --chown=market_prozorro_ua auth.htpasswd manage.py ./
 COPY docker-entrypoint.sh /usr/local/bin/
 

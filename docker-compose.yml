@@ -13,6 +13,11 @@ services:
 
   web:
     build: .
+    volumes:
+      - ./application:/code/application
+      - ./criteria:/code/criteria
+      - ./profiles:/code/profiles
+      - ./standarts:/code/standarts
     environment:
       POSTGRES_DB: ecatalogue
       POSTGRES_USER: postgres

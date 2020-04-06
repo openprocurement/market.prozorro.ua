@@ -564,6 +564,24 @@ class TestProfileDetail(ProfileAPITestCase):
             patch_response.json()['criteria'][0]['title'], 'foo'
         )
 
+        # editing criteria without relatedCriteria_id
+        invalid_profile_data = self.valid_profile_data_1.copy()
+        invalid_requirements_no_relatedCriteria_id = [
+            {
+                "title": "Test requirement2",
+                "description": "Test requirement description2",
+                "expectedValue": "100",
+            }
+        ]
+        invalid_profile_data['criteria'][0]['requirementGroups'][0]['requirements'] = \
+            invalid_requirements_no_relatedCriteria_id
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
     def test_profile_delete(self):
         self.client.post(path=API_URL, data=self.valid_profile_data_1)
         profile_obj = Profile.objects.first()

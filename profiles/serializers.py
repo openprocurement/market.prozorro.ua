@@ -47,7 +47,6 @@ class RequirementSerializer(serializers.ModelSerializer):
         value_dict = {}
         has_related_criteria = False
         for key, value in data.items():
-            print('key, value', key, value)
             if key in self.ONE_VALUE_AT_A_TIME_FIELDS:
                 if value and value_dict:
                     raise ValidationError(error_msg)
