@@ -45,14 +45,22 @@ class RequirementSerializer(serializers.ModelSerializer):
 
         # dict for storing passed values for expectedValue, minValue, maxValue
         value_dict = {}
+        has_related_criteria = False
         for key, value in data.items():
+            print('key, value', key, value)
             if key in self.ONE_VALUE_AT_A_TIME_FIELDS:
                 if value and value_dict:
                     raise ValidationError(error_msg)
                 else:
                     value_dict[key] = value
+            elif key == 'related_criteria_id':
+                has_related_criteria = True
         if not value_dict:
             raise ValidationError(error_msg)
+        if not has_related_criteria:
+            raise ValidationError({
+                'relatedCriteria_id': 'relatedCriteria_id is missing'
+            })
 
         self.validate_value(value_dict)
         return data
