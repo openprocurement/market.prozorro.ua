@@ -38,6 +38,11 @@ class RequirementSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
+        if not data.get('related_criteria_id'):
+            raise ValidationError({
+                'relatedCriteria_id': 'relatedCriteria_id is missing'
+            })
+
         error_msg = (
             'You must pass exact one of following keys: '
             '"expectedValue", "minValue", "maxValue"'
