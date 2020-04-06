@@ -110,7 +110,7 @@ class RequirementGroupSerializer(serializers.ModelSerializer):
         exclude = ()
 
     def validate(self, data):
-        if data.get('requirements') and len(data.get('requirements', [])) == 0:
+        if data.get('requirements') is not None and len(data.get('requirements', [])) == 0:
             raise ValidationError('requirements array may not be empty')
         return super().validate(data)
 
@@ -126,7 +126,7 @@ class ProfileCriteriaSerializer(serializers.ModelSerializer):
         exclude = ('requirement_groups', )
 
     def validate(self, data):
-        if data.get('requirement_groups') and len(data.get('requirement_groups', [])) == 0:
+        if data.get('requirement_groups') is not None and len(data.get('requirement_groups', [])) == 0:
             raise ValidationError('requirement groups array may not be empty')
         return super().validate(data)
 
@@ -281,7 +281,7 @@ class ProfileEditSerializer(ProfileBaseSerializer):
 
     def validate(self, data):
         # check if extra fields were passed
-        if data.get('criteria') and len(data.get('criteria')) == 0:
+        if data.get('criteria') is not None and len(data.get('criteria')) == 0:
             raise ValidationError('criteria array may not be empty')
         if hasattr(self, 'initial_data'):
             writable_fields = set(
