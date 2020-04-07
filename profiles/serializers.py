@@ -7,6 +7,7 @@ from criteria.models import Criteria
 from profiles.models import (
     CURRENCY_CHOICES, Profile, ProfileCriteria, Requirement, RequirementGroup
 )
+from profiles.utils import check_required_fields
 from standarts.serializers import (
     AdditionalClassificationSerializer, ClassificationSerializer,
     UnitSerializer
@@ -17,6 +18,7 @@ class RequirementSerializer(serializers.ModelSerializer):
     ONE_VALUE_AT_A_TIME_FIELDS = set(
         ('expected_value', 'min_value', 'max_value')
     )
+    REQUIREMENTS_REQUIRED_FIELDS = ('title',)
 
     relatedCriteria_id = serializers.UUIDField(source='related_criteria_id')
     unit = UnitSerializer(read_only=True)
@@ -102,6 +104,8 @@ class RequirementSerializer(serializers.ModelSerializer):
 
 
 class RequirementGroupSerializer(serializers.ModelSerializer):
+    GROUP_REQUIRED_FIELDS = ('requirements',)
+
     id = serializers.CharField(source='id.hex', required=False)
     requirements = RequirementSerializer(many=True, allow_empty=False)
 
@@ -109,8 +113,21 @@ class RequirementGroupSerializer(serializers.ModelSerializer):
         model = RequirementGroup
         exclude = ()
 
+    def validate(self, data):
+        try:
+            data['id']['hex']
+        except KeyError:
+            possible_errors = check_required_fields(data, self.GROUP_REQUIRED_FIELDS)
+            if len(possible_errors) > 0:
+                raise ValidationError(
+                    f'The following fields are required: {", ".join(possible_errors)}'
+                )
+        return super().validate(data)
+
 
 class ProfileCriteriaSerializer(serializers.ModelSerializer):
+    CRITERIA_REQUIRED_FIELDS = ('title', 'requirement_groups')
+
     id = serializers.CharField(source='id.hex', required=False)
     requirementGroups = RequirementGroupSerializer(
         source='requirement_groups', many=True, allow_empty=False
@@ -119,6 +136,18 @@ class ProfileCriteriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProfileCriteria
         exclude = ('requirement_groups', )
+
+    def validate(self, data):
+        try:
+            data['id']['hex']
+        except KeyError:
+            possible_errors = check_required_fields(data, self.CRITERIA_REQUIRED_FIELDS)
+            if len(possible_errors) > 0:
+                raise ValidationError(
+                    f'The following fields are required: {", ".join(possible_errors)}'
+                )
+        return super().validate(data)
+
 
 
 class ProfileImageSerializer(serializers.Serializer):
