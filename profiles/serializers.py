@@ -145,7 +145,7 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', read_only=True)
     unit = UnitSerializer()
     value = ValueSerializer()
-    criteria = ProfileCriteriaSerializer(many=True, allow_null=True, allow_empty=False)
+    criteria = ProfileCriteriaSerializer(many=True, allow_empty=False)
     images = ProfileImageSerializer(many=True)
     dateModified = serializers.DateTimeField(
         source='date_modified', read_only=True
