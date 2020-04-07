@@ -103,32 +103,23 @@ class RequirementSerializer(serializers.ModelSerializer):
 
 class RequirementGroupSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', required=False)
-    requirements = RequirementSerializer(many=True)
+    requirements = RequirementSerializer(many=True, allow_null=True, allow_empty=False)
 
     class Meta:
         model = RequirementGroup
         exclude = ()
 
-    def validate(self, data):
-        if data.get('requirements') is not None and len(data.get('requirements', [])) == 0:
-            raise ValidationError('requirements array may not be empty')
-        return super().validate(data)
-
 
 class ProfileCriteriaSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', required=False)
     requirementGroups = RequirementGroupSerializer(
-        source='requirement_groups', many=True
+        source='requirement_groups', many=True,
+        allow_null=True, allow_empty=False
     )
 
     class Meta:
         model = ProfileCriteria
         exclude = ('requirement_groups', )
-
-    def validate(self, data):
-        if data.get('requirement_groups') is not None and len(data.get('requirement_groups', [])) == 0:
-            raise ValidationError('requirement groups array may not be empty')
-        return super().validate(data)
 
 
 class ProfileImageSerializer(serializers.Serializer):
@@ -154,7 +145,7 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', read_only=True)
     unit = UnitSerializer()
     value = ValueSerializer()
-    criteria = ProfileCriteriaSerializer(many=True)
+    criteria = ProfileCriteriaSerializer(many=True, allow_null=True, allow_empty=False)
     images = ProfileImageSerializer(many=True)
     dateModified = serializers.DateTimeField(
         source='date_modified', read_only=True
@@ -281,8 +272,6 @@ class ProfileEditSerializer(ProfileBaseSerializer):
 
     def validate(self, data):
         # check if extra fields were passed
-        if data.get('criteria') is not None and len(data.get('criteria')) == 0:
-            raise ValidationError('criteria array may not be empty')
         if hasattr(self, 'initial_data'):
             writable_fields = set(
                 key for key, value in self.fields.items()
