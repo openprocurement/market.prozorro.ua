@@ -103,7 +103,7 @@ class RequirementSerializer(serializers.ModelSerializer):
 
 class RequirementGroupSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', required=False)
-    requirements = RequirementSerializer(many=True)
+    requirements = RequirementSerializer(many=True, allow_empty=False)
 
     class Meta:
         model = RequirementGroup
@@ -113,7 +113,7 @@ class RequirementGroupSerializer(serializers.ModelSerializer):
 class ProfileCriteriaSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', required=False)
     requirementGroups = RequirementGroupSerializer(
-        source='requirement_groups', many=True
+        source='requirement_groups', many=True, allow_empty=False
     )
 
     class Meta:
@@ -144,7 +144,7 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', read_only=True)
     unit = UnitSerializer()
     value = ValueSerializer()
-    criteria = ProfileCriteriaSerializer(many=True)
+    criteria = ProfileCriteriaSerializer(many=True, allow_empty=False)
     images = ProfileImageSerializer(many=True)
     dateModified = serializers.DateTimeField(
         source='date_modified', read_only=True
