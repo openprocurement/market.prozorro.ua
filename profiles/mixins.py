@@ -1,5 +1,7 @@
 from rest_framework.exceptions import ValidationError
 
+from .utils import to_camel_case
+
 class ValidateRequiredFieldsMixin:
     REQUIRED_FIELDS = ()
 
@@ -11,7 +13,7 @@ class ValidateRequiredFieldsMixin:
             if possible_errors:
                 error_dict = {}
                 for error in possible_errors:
-                    error_dict[error] = 'This field is required.'
+                    error_dict[to_camel_case(error)] = 'This field is required.'
                 raise ValidationError(error_dict)
         return data
 
