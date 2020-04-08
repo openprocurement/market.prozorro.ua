@@ -473,6 +473,7 @@ class TestProfileDetail(ProfileAPITestCase):
                 'id': criteria_data['id'],
             },
             {
+                'title': 'bar',
                 'requirementGroups': [
                     {
                         'requirements': [new_requirement]
@@ -606,6 +607,26 @@ class TestProfileDetail(ProfileAPITestCase):
         # editing requirement groups passing empty requirements array should return 400
         invalid_profile_data = deepcopy(self.valid_profile_data_1)
         invalid_profile_data['criteria'][0]['requirementGroups'][0]['requirements'] = []
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # passing empty criterion object should return 400
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_profile_data['criteria'][0] = {}
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # passing empty group requirement obj should return 400
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_profile_data['criteria'][0]['requirementGroups'][0] = {}
         self.assertEqual(
             self.client.patch(
                 path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data

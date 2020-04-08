@@ -7,6 +7,7 @@ from criteria.models import Criteria
 from profiles.models import (
     CURRENCY_CHOICES, Profile, ProfileCriteria, Requirement, RequirementGroup
 )
+from profiles.mixins import ValidateRequiredFieldsMixin
 from standarts.serializers import (
     AdditionalClassificationSerializer, ClassificationSerializer,
     UnitSerializer
@@ -101,7 +102,11 @@ class RequirementSerializer(serializers.ModelSerializer):
         return data
 
 
-class RequirementGroupSerializer(serializers.ModelSerializer):
+class RequirementGroupSerializer(
+    ValidateRequiredFieldsMixin, serializers.ModelSerializer
+):
+    REQUIRED_FIELDS = ('requirements',)
+
     id = serializers.CharField(source='id.hex', required=False)
     requirements = RequirementSerializer(many=True, allow_empty=False)
 
@@ -110,7 +115,11 @@ class RequirementGroupSerializer(serializers.ModelSerializer):
         exclude = ()
 
 
-class ProfileCriteriaSerializer(serializers.ModelSerializer):
+class ProfileCriteriaSerializer(
+    ValidateRequiredFieldsMixin, serializers.ModelSerializer
+):
+    REQUIRED_FIELDS = ('title', 'requirement_groups')
+
     id = serializers.CharField(source='id.hex', required=False)
     requirementGroups = RequirementGroupSerializer(
         source='requirement_groups', many=True, allow_empty=False
