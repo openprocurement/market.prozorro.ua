@@ -7,6 +7,7 @@ from criteria.models import Criteria
 from profiles.models import (
     CURRENCY_CHOICES, Profile, ProfileCriteria, Requirement, RequirementGroup
 )
+from profiles.mixins import ValidateRequiredFieldsMixin
 from standarts.serializers import (
     AdditionalClassificationSerializer, ClassificationSerializer,
     UnitSerializer
@@ -38,6 +39,11 @@ class RequirementSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
+        if not data.get('related_criteria_id'):
+            raise ValidationError({
+                'relatedCriteria_id': 'relatedCriteria_id is missing'
+            })
+
         error_msg = (
             'You must pass exact one of following keys: '
             '"expectedValue", "minValue", "maxValue"'
@@ -96,19 +102,27 @@ class RequirementSerializer(serializers.ModelSerializer):
         return data
 
 
-class RequirementGroupSerializer(serializers.ModelSerializer):
+class RequirementGroupSerializer(
+    ValidateRequiredFieldsMixin, serializers.ModelSerializer
+):
+    REQUIRED_FIELDS = ('requirements',)
+
     id = serializers.CharField(source='id.hex', required=False)
-    requirements = RequirementSerializer(many=True)
+    requirements = RequirementSerializer(many=True, allow_empty=False)
 
     class Meta:
         model = RequirementGroup
         exclude = ()
 
 
-class ProfileCriteriaSerializer(serializers.ModelSerializer):
+class ProfileCriteriaSerializer(
+    ValidateRequiredFieldsMixin, serializers.ModelSerializer
+):
+    REQUIRED_FIELDS = ('title', 'requirement_groups')
+
     id = serializers.CharField(source='id.hex', required=False)
     requirementGroups = RequirementGroupSerializer(
-        source='requirement_groups', many=True
+        source='requirement_groups', many=True, allow_empty=False
     )
 
     class Meta:
@@ -139,7 +153,7 @@ class ProfileBaseSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id.hex', read_only=True)
     unit = UnitSerializer()
     value = ValueSerializer()
-    criteria = ProfileCriteriaSerializer(many=True)
+    criteria = ProfileCriteriaSerializer(many=True, allow_empty=False)
     images = ProfileImageSerializer(many=True)
     dateModified = serializers.DateTimeField(
         source='date_modified', read_only=True

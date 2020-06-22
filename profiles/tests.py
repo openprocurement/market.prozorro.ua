@@ -393,6 +393,7 @@ class TestProfileDetail(ProfileAPITestCase):
             status.HTTP_400_BAD_REQUEST
         )
         data['access'] = correct_access_data
+        data['data']['criteria'] = self.valid_profile_data_1['criteria']
         patch_response = self.client.patch(
             path=f'{API_URL}{profile_obj.id.hex}/',
             data=data
@@ -472,6 +473,7 @@ class TestProfileDetail(ProfileAPITestCase):
                 'id': criteria_data['id'],
             },
             {
+                'title': 'bar',
                 'requirementGroups': [
                     {
                         'requirements': [new_requirement]
@@ -562,6 +564,74 @@ class TestProfileDetail(ProfileAPITestCase):
         self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             patch_response.json()['criteria'][0]['title'], 'foo'
+        )
+
+        # editing criteria without relatedCriteria_id
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_requirements_no_relatedCriteria_id = [
+            {
+                "title": "Test requirement2",
+                "description": "Test requirement description2",
+                "expectedValue": "100",
+            }
+        ]
+        invalid_profile_data['criteria'][0]['requirementGroups'][0]['requirements'] = \
+            invalid_requirements_no_relatedCriteria_id
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # editing profile passing empty criteria array should return 400
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_profile_data['criteria'] = []
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # editing criteria passing empty requirement groups array should return 400
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_profile_data['criteria'][0]['requirementGroups'] = []
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # editing requirement groups passing empty requirements array should return 400
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_profile_data['criteria'][0]['requirementGroups'][0]['requirements'] = []
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # passing empty criterion object should return 400
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_profile_data['criteria'][0] = {}
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        # passing empty group requirement obj should return 400
+        invalid_profile_data = deepcopy(self.valid_profile_data_1)
+        invalid_profile_data['criteria'][0]['requirementGroups'][0] = {}
+        self.assertEqual(
+            self.client.patch(
+                path=f'{API_URL}{profile_obj.id.hex}/', data=invalid_profile_data
+            ).status_code,
+            status.HTTP_400_BAD_REQUEST
         )
 
     def test_profile_delete(self):
